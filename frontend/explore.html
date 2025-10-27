@@ -20,6 +20,7 @@
       --main-margin: 240px;
       --header-height: 70px;
       --season-name: "Default";
+      --animations-enabled: 1;
     }
 
     /* Seasonal Themes */
@@ -53,6 +54,91 @@
       --accent: #cc5de8;
       --dark-bg: #2a1a0f;
       --season-name: "Autumn";
+    }
+
+    /* Animation Control - COMPLETE DISABLE */
+    .no-animations * {
+      animation: none !important;
+      transition: none !important;
+    }
+
+    .no-animations body::before {
+      animation: none !important;
+    }
+
+    .no-animations .season-decoration * {
+      animation: none !important;
+    }
+
+    .no-animations #particles-js {
+      display: none !important;
+    }
+
+    .no-animations .welcome {
+      animation: none !important;
+      opacity: 1 !important;
+    }
+
+    .no-animations .welcome h1 {
+      animation: none !important;
+    }
+
+    .no-animations .search-container,
+    .no-animations .filter-container {
+      animation: none !important;
+      opacity: 1 !important;
+    }
+
+    .no-animations .explore-card {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+
+    .no-animations .explore-card:hover {
+      transform: none !important;
+    }
+
+    .no-animations .explore-card:hover i {
+      transform: none !important;
+    }
+
+    .no-animations .explore-card::before {
+      display: none !important;
+    }
+
+    .no-animations .counter.animating {
+      animation: none !important;
+    }
+
+    .no-animations .loader .dot {
+      animation: none !important;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 12px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 6px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(to bottom, var(--primary), var(--secondary));
+      border-radius: 6px;
+      border: 2px solid rgba(0, 0, 0, 0.2);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(to bottom, var(--secondary), var(--primary));
+    }
+
+    /* Firefox Scrollbar */
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--primary) rgba(0, 0, 0, 0.2);
     }
 
     * {
@@ -113,7 +199,7 @@
         linear-gradient(45deg, rgba(200, 130, 60, 0.1) 0%, transparent 50%);
     }
 
-    /* Background grid */
+    /* Background grid - will be disabled when animations are off */
     body::before {
       content: "";
       position: fixed;
@@ -138,7 +224,7 @@
       }
     }
 
-    /* Particle System */
+    /* Particle System - will be hidden when animations are off */
     #particles-js {
       position: fixed;
       width: 100%;
@@ -173,7 +259,7 @@
       -webkit-text-fill-color: transparent;
     }
 
-    /* Sidebar */
+    /* Enhanced Sidebar */
     .sidebar {
       width: var(--sidebar-width);
       background: rgba(0, 0, 0, 0.6);
@@ -191,29 +277,65 @@
       overflow-y: auto;
     }
 
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar-logo {
+      width: 40px;
+      height: 40px;
+      margin-right: 10px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+
     .sidebar h2 {
       font-size: 1.4em;
       background: linear-gradient(90deg, var(--primary), var(--secondary));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 25px;
+      margin-bottom: 0;
+    }
+
+    .sidebar-section {
+      margin-bottom: 20px;
+    }
+
+    .sidebar-section-title {
+      font-size: 0.8em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+      padding-left: 12px;
+      letter-spacing: 1px;
     }
 
     .sidebar a {
       display: flex;
       align-items: center;
       padding: 10px 12px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       border-radius: 8px;
       text-decoration: none;
       color: var(--text-secondary);
-      transition: 0.3s;
+      transition: all 0.3s ease;
       font-size: 0.95em;
     }
 
     .sidebar a i {
       margin-right: 10px;
       color: var(--secondary);
+      width: 20px;
+      text-align: center;
     }
 
     .sidebar a:hover,
@@ -222,12 +344,69 @@
       color: var(--text-primary);
     }
 
+    .sidebar a .badge {
+      margin-left: auto;
+      background: var(--accent);
+      color: white;
+      font-size: 0.7em;
+      padding: 2px 6px;
+      border-radius: 10px;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      padding: 8px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 10px;
+      color: white;
+      font-weight: bold;
+    }
+
+    .user-info {
+      flex: 1;
+    }
+
+    .user-name {
+      font-size: 0.9em;
+      font-weight: bold;
+    }
+
+    .user-status {
+      font-size: 0.75em;
+      color: var(--text-secondary);
+    }
+
+    .user-status.online {
+      color: #2ed573;
+    }
+
     /* Main content */
     .main {
       margin-left: var(--main-margin);
       padding: 40px 20px;
       flex: 1;
       transition: margin-left 0.3s ease, padding 0.3s ease;
+      overflow-y: auto;
+      max-height: 100vh;
     }
 
     .welcome {
@@ -686,6 +865,19 @@
 
     .counter.animating {
       color: var(--secondary);
+      animation: countUp 1.5s ease-out forwards;
+    }
+
+    @keyframes countUp {
+      from {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.2);
+      }
+      to {
+        transform: scale(1);
+      }
     }
 
     /* Seasonal decorations */
@@ -727,17 +919,47 @@
     </button>
   </div>
 
-  <!-- Sidebar -->
+  <!-- Enhanced Sidebar -->
   <div class="sidebar" id="sidebar">
-    <h2>Qauzium</h2>
-    <a href="../index.html"><i class="fas fa-home"></i> Home</a>
-    <a href="explore.html" class="active"><i class="fas fa-compass"></i> Explore</a>
-    <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
-    <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
-    <a href="dev.html"><i class="fas fa-code"></i> Developers</a>
-    <a href="about.html"><i class="fas fa-info-circle"></i> About</a>
-    <div style="margin-top: auto; padding: 15px 0;">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">Q</div>
+      <h2>Qauzium</h2>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Main</div>
+      <a href="../index.html"><i class="fas fa-home"></i> Home</a>
+      <a href="explore.html" class="active"><i class="fas fa-compass"></i> Explore</a>
+      <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+      <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Content</div>
+      <a href="dev.html"><i class="fas fa-code"></i> Developers</a>
+      <a href="about.html"><i class="fas fa-info-circle"></i> About</a>
+      <a href="gallery/gallery.html"><i class="fas fa-images"></i> Gallery</a>
+      <a href="Games/games.html"><i class="fas fa-gamepad"></i> Mini-Games <span class="badge">Popular</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Tools</div>
+      <a href="project1.html"><i class="fas fa-code"></i> Project One</a>
+      <a href="project2.html"><i class="fas fa-brain"></i> Project Two</a>
+      <a href="concepts.html"><i class="fas fa-lightbulb"></i> Concepts</a>
+      <a href="#"><i class="fas fa-calculator"></i> Qulator <span class="badge">Soon</span></a>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="user-profile">
+        <div class="user-avatar">U</div>
+        <div class="user-info">
+          <div class="user-name">User Name</div>
+          <div class="user-status online">Online</div>
+        </div>
+      </div>
       <a href="#" id="theme-toggle"><i class="fas fa-moon"></i> Dark Mode</a>
+      <a href="#" id="animations-toggle"><i class="fas fa-play-circle"></i> Animations: On</a>
     </div>
   </div>
 
@@ -867,10 +1089,107 @@
     const exploreGrid = document.getElementById('exploreGrid');
     const loader = document.getElementById('loader');
     const themeToggle = document.getElementById('theme-toggle');
+    const animationsToggle = document.getElementById('animations-toggle');
     const resizeIndicator = document.getElementById('resizeIndicator');
     const seasonIndicator = document.getElementById('seasonIndicator');
     const seasonText = document.getElementById('seasonText');
     const seasonIcon = document.getElementById('seasonIcon');
+
+    // Settings management
+    const settings = {
+      animationsEnabled: true,
+      theme: 'dark'
+    };
+
+    // Load settings from localStorage
+    function loadSettings() {
+      const savedSettings = localStorage.getItem('qauziumSettings');
+      if (savedSettings) {
+        Object.assign(settings, JSON.parse(savedSettings));
+      }
+      
+      // Apply loaded settings
+      applySettings();
+    }
+
+    // Save settings to localStorage
+    function saveSettings() {
+      localStorage.setItem('qauziumSettings', JSON.stringify(settings));
+    }
+
+    // Apply settings to the UI
+    function applySettings() {
+      // Apply animation setting
+      if (settings.animationsEnabled) {
+        document.body.classList.remove('no-animations');
+        animationsToggle.innerHTML = '<i class="fas fa-play-circle"></i> Animations: On';
+        
+        // Show particles
+        document.getElementById('particles-js').style.display = 'block';
+        
+        // Re-enable all animations by removing inline styles
+        document.querySelectorAll('.welcome, .search-container, .filter-container, .explore-card').forEach(el => {
+          el.style.animation = '';
+          el.style.opacity = '';
+          el.style.transform = '';
+        });
+        
+        // Re-enable hover effects
+        document.querySelectorAll('.explore-card').forEach(card => {
+          card.style.setProperty('--animations-enabled', '1');
+        });
+
+        // Reinitialize particles if needed
+        if (window.pJSDom && window.pJSDom[0]) {
+          window.pJSDom[0].pJS.fn.particlesRefresh();
+        }
+      } else {
+        document.body.classList.add('no-animations');
+        animationsToggle.innerHTML = '<i class="fas fa-pause-circle"></i> Animations: Off';
+        
+        // Hide particles completely
+        document.getElementById('particles-js').style.display = 'none';
+        
+        // Force disable all UI animations with inline styles
+        document.querySelectorAll('.welcome, .search-container, .filter-container').forEach(el => {
+          el.style.animation = 'none';
+          el.style.opacity = '1';
+        });
+        
+        document.querySelectorAll('.explore-card').forEach(card => {
+          card.style.animation = 'none';
+          card.style.opacity = '1';
+          card.style.transform = 'none';
+        });
+        
+        // Remove seasonal decorations
+        document.querySelectorAll('.season-decoration').forEach(el => el.remove());
+        
+        // Disable hover effects
+        document.querySelectorAll('.explore-card').forEach(card => {
+          card.style.setProperty('--animations-enabled', '0');
+        });
+      }
+
+      // Apply theme setting
+      if (settings.theme === 'light') {
+        document.body.classList.add('light-theme');
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+        // Update CSS variables for light theme
+        document.documentElement.style.setProperty('--dark-bg', '#f5f5f5');
+        document.documentElement.style.setProperty('--card-bg', 'rgba(255, 255, 255, 0.8)');
+        document.documentElement.style.setProperty('--text-primary', '#333');
+        document.documentElement.style.setProperty('--text-secondary', '#666');
+      } else {
+        document.body.classList.remove('light-theme');
+        themeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+        // Revert to dark theme variables
+        document.documentElement.style.setProperty('--dark-bg', '#121212');
+        document.documentElement.style.setProperty('--card-bg', 'rgba(255, 255, 255, 0.05)');
+        document.documentElement.style.setProperty('--text-primary', '#fff');
+        document.documentElement.style.setProperty('--text-secondary', '#bbb');
+      }
+    }
 
     // Seasonal data
     const seasons = {
@@ -962,8 +1281,10 @@
       // Update particles for the season
       updateParticles(season);
 
-      // Add seasonal decorations
-      addSeasonalDecorations(season);
+      // Only add seasonal decorations if animations are enabled
+      if (settings.animationsEnabled) {
+        addSeasonalDecorations(season);
+      }
     }
 
     // Update particles based on season
@@ -986,6 +1307,9 @@
     function addSeasonalDecorations(season) {
       // Remove existing decorations
       document.querySelectorAll('.season-decoration').forEach(el => el.remove());
+
+      // Only add decorations if animations are enabled
+      if (!settings.animationsEnabled) return;
 
       const decorationContainer = document.createElement('div');
       decorationContainer.className = 'season-decoration';
@@ -1034,6 +1358,12 @@
 
     // Initialize particle system
     function initParticles() {
+      // Only initialize particles if animations are enabled
+      if (!settings.animationsEnabled) {
+        document.getElementById('particles-js').style.display = 'none';
+        return;
+      }
+
       particlesJS('particles-js', {
         particles: {
           number: { value: 40, density: { enable: true, value_area: 800 } },
@@ -1136,6 +1466,7 @@
         const isDark = document.body.classList.toggle('light-theme');
 
         if (isDark) {
+          settings.theme = 'light';
           themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
           // Update CSS variables for light theme
           document.documentElement.style.setProperty('--dark-bg', '#f5f5f5');
@@ -1143,6 +1474,7 @@
           document.documentElement.style.setProperty('--text-primary', '#333');
           document.documentElement.style.setProperty('--text-secondary', '#666');
         } else {
+          settings.theme = 'dark';
           themeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
           // Revert to dark theme variables
           document.documentElement.style.setProperty('--dark-bg', '#121212');
@@ -1151,6 +1483,9 @@
           document.documentElement.style.setProperty('--text-secondary', '#bbb');
         }
 
+        // Save settings
+        saveSettings();
+
         // Remove transition class after theme change
         setTimeout(() => {
           document.body.classList.remove('theme-transition');
@@ -1158,8 +1493,28 @@
       }, 100);
     });
 
+    // Animations toggle functionality
+    animationsToggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      
+      settings.animationsEnabled = !settings.animationsEnabled;
+      
+      // Apply the setting
+      applySettings();
+      
+      // Reapply seasonal theme to handle decorations
+      const currentSeason = getCurrentSeason();
+      applySeasonalTheme(currentSeason);
+      
+      // Save settings
+      saveSettings();
+    });
+
     // Animate cards on page load
     document.addEventListener('DOMContentLoaded', () => {
+      // Load settings first
+      loadSettings();
+      
       exploreCards.forEach((card, index) => {
         card.style.animationDelay = `${index * 0.1}s`;
       });
@@ -1237,7 +1592,4 @@
     window.dispatchEvent(new Event('resize'));
   </script>
 </body>
-
-
 </html>
-
