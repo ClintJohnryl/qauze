@@ -694,6 +694,7 @@
       z-index: 2;
     }
 
+    /* Fixed Timeline Styles */
     .timeline {
       margin: 50px 0;
       position: relative;
@@ -712,14 +713,20 @@
 
     .timeline-item {
       display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 40px;
       position: relative;
       opacity: 0;
-      transform: translateY(20px);
-      animation: cardAppear 0.5s ease forwards;
+      transform: translateY(30px);
+      animation: timelineAppear 0.6s ease forwards;
     }
 
     .timeline-item:nth-child(odd) {
+      flex-direction: row;
+    }
+
+    .timeline-item:nth-child(even) {
       flex-direction: row-reverse;
     }
 
@@ -727,11 +734,15 @@
       position: relative;
       background: var(--card-bg);
       border-radius: 12px;
-      padding: 20px;
-      width: calc(50% - 40px);
+      padding: 25px;
+      width: 45%;
       backdrop-filter: blur(15px);
       border: 1px solid rgba(255, 255, 255, 0.1);
       transition: all 0.3s ease;
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     /* Enhanced timeline hover effects */
@@ -760,6 +771,21 @@
       font-weight: bold;
       color: var(--secondary);
       margin-bottom: 10px;
+      font-size: 1.1rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .timeline-content h3 {
+      margin-bottom: 8px;
+      font-size: 1.3rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .timeline-content p {
+      color: var(--text-secondary);
+      line-height: 1.5;
       position: relative;
       z-index: 2;
     }
@@ -768,21 +794,41 @@
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      width: 20px;
-      height: 20px;
+      width: 24px;
+      height: 24px;
       border-radius: 50%;
       background: var(--primary);
-      z-index: 1;
+      border: 3px solid var(--dark-bg);
+      z-index: 2;
       transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .timeline-dot::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--secondary);
     }
 
     .timeline-item:hover .timeline-dot {
       transform: translateX(-50%) scale(1.2);
-      box-shadow: 0 0 15px var(--secondary);
+      box-shadow: 0 0 20px var(--secondary);
     }
 
     /* Card animation */
     @keyframes cardAppear {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Timeline specific animation */
+    @keyframes timelineAppear {
       to {
         opacity: 1;
         transform: translateY(0);
@@ -1000,6 +1046,7 @@
           space.</p>
       </div>
 
+      <!-- Fixed Timeline Section -->
       <div class="timeline">
         <div class="timeline-item" style="animation-delay: 0.7s">
           <div class="timeline-content">
@@ -1008,15 +1055,17 @@
             <p>Initial idea and planning for Qauzium began.</p>
           </div>
           <div class="timeline-dot"></div>
+          <div style="width: 45%;"></div> <!-- Spacer for even layout -->
         </div>
 
         <div class="timeline-item" style="animation-delay: 0.8s">
+          <div style="width: 45%;"></div> <!-- Spacer for even layout -->
+          <div class="timeline-dot"></div>
           <div class="timeline-content">
             <div class="timeline-date">June 2022</div>
             <h3>First Prototype</h3>
             <p>Completed the first working prototype of the platform.</p>
           </div>
-          <div class="timeline-dot"></div>
         </div>
 
         <div class="timeline-item" style="animation-delay: 0.9s">
@@ -1026,15 +1075,17 @@
             <p>Released the beta version to a small group of testers.</p>
           </div>
           <div class="timeline-dot"></div>
+          <div style="width: 45%;"></div> <!-- Spacer for even layout -->
         </div>
 
         <div class="timeline-item" style="animation-delay: 1.0s">
+          <div style="width: 45%;"></div> <!-- Spacer for even layout -->
+          <div class="timeline-dot"></div>
           <div class="timeline-content">
             <div class="timeline-date">May 2023</div>
             <h3>Official Launch</h3>
             <p>Public release of Qauzium with full feature set.</p>
           </div>
-          <div class="timeline-dot"></div>
         </div>
       </div>
     </div>
