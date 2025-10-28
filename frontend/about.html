@@ -105,11 +105,6 @@
       transform: none !important;
     }
 
-    .no-animations .feature-card::before,
-    .no-animations .timeline-content::before {
-      display: none !important;
-    }
-
     /* Custom Scrollbar */
     ::-webkit-scrollbar {
       width: 12px;
@@ -645,7 +640,7 @@
       overflow: hidden;
     }
 
-    /* Enhanced card hover effects */
+    /* Enhanced card hover effects - KEEP for feature cards */
     .feature-card::before {
       content: '';
       position: absolute;
@@ -745,26 +740,13 @@
       justify-content: center;
     }
 
-    /* Enhanced timeline hover effects */
-    .timeline-content::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-      transition: left 0.7s ease;
-    }
-
-    .timeline-content:hover::before {
-      left: 100%;
-    }
-
+    /* REMOVED the white gradient animation from timeline cards */
+    /* Clean hover effect for timeline cards only */
     .timeline-content:hover {
       transform: translateY(-5px);
       box-shadow: 0 8px 25px var(--primary);
       border-color: var(--secondary);
+      background: rgba(255, 255, 255, 0.08);
     }
 
     .timeline-date {
@@ -772,22 +754,16 @@
       color: var(--secondary);
       margin-bottom: 10px;
       font-size: 1.1rem;
-      position: relative;
-      z-index: 2;
     }
 
     .timeline-content h3 {
       margin-bottom: 8px;
       font-size: 1.3rem;
-      position: relative;
-      z-index: 2;
     }
 
     .timeline-content p {
       color: var(--text-secondary);
       line-height: 1.5;
-      position: relative;
-      z-index: 2;
     }
 
     .timeline-dot {
@@ -1146,7 +1122,7 @@
         });
         
         // Re-enable hover effects
-        document.querySelectorAll('.feature-card, .timeline-content').forEach(card => {
+        document.querySelectorAll('.feature-card').forEach(card => {
           card.style.setProperty('--animations-enabled', '1');
         });
 
@@ -1177,7 +1153,7 @@
         document.querySelectorAll('.season-decoration').forEach(el => el.remove());
         
         // Disable hover effects
-        document.querySelectorAll('.feature-card, .timeline-content').forEach(card => {
+        document.querySelectorAll('.feature-card').forEach(card => {
           card.style.setProperty('--animations-enabled', '0');
         });
       }
@@ -1459,7 +1435,7 @@
           document.body.classList.remove('theme-transition');
         }, 500);
       }, 100);
-    });
+    }
 
     // Animations toggle functionality
     animationsToggle.addEventListener('click', (e) => {
