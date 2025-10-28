@@ -19,6 +19,8 @@
       --sidebar-width: 220px;
       --main-margin: 240px;
       --header-height: 70px;
+      --season-name: "Default";
+      --animations-enabled: 1;
     }
 
     /* Seasonal Themes */
@@ -27,6 +29,7 @@
       --secondary: #a5d8ff;
       --accent: #ff8787;
       --dark-bg: #0f1a2a;
+      --season-name: "Winter";
     }
 
     .season-spring {
@@ -34,6 +37,7 @@
       --secondary: #b2f2bb;
       --accent: #ffa94d;
       --dark-bg: #1a2f1a;
+      --season-name: "Spring";
     }
 
     .season-summer {
@@ -41,6 +45,7 @@
       --secondary: #ffec99;
       --accent: #ff6b6b;
       --dark-bg: #2a1f0f;
+      --season-name: "Summer";
     }
 
     .season-autumn {
@@ -48,6 +53,87 @@
       --secondary: #ffc078;
       --accent: #cc5de8;
       --dark-bg: #2a1a0f;
+      --season-name: "Autumn";
+    }
+
+    /* Animation Control - COMPLETE DISABLE */
+    .no-animations * {
+      animation: none !important;
+      transition: none !important;
+    }
+
+    .no-animations body::before {
+      animation: none !important;
+    }
+
+    .no-animations .season-decoration * {
+      animation: none !important;
+    }
+
+    .no-animations #particles-js {
+      display: none !important;
+    }
+
+    .no-animations .welcome {
+      animation: none !important;
+      opacity: 1 !important;
+    }
+
+    .no-animations .welcome h1 {
+      animation: none !important;
+    }
+
+    .no-animations .mission-section,
+    .no-animations .feature-card,
+    .no-animations .timeline-content {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+
+    .no-animations .mission-section:hover,
+    .no-animations .feature-card:hover,
+    .no-animations .timeline-content:hover {
+      transform: none !important;
+    }
+
+    .no-animations .feature-card:hover i {
+      transform: none !important;
+    }
+
+    .no-animations .timeline-item:hover .timeline-dot {
+      transform: none !important;
+    }
+
+    .no-animations .feature-card::before,
+    .no-animations .timeline-content::before {
+      display: none !important;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 12px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 6px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(to bottom, var(--primary), var(--secondary));
+      border-radius: 6px;
+      border: 2px solid rgba(0, 0, 0, 0.2);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(to bottom, var(--secondary), var(--primary));
+    }
+
+    /* Firefox Scrollbar */
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--primary) rgba(0, 0, 0, 0.2);
     }
 
     * {
@@ -108,7 +194,7 @@
         linear-gradient(45deg, rgba(200, 130, 60, 0.1) 0%, transparent 50%);
     }
 
-    /* Background grid */
+    /* Background grid - will be disabled when animations are off */
     body::before {
       content: "";
       position: fixed;
@@ -133,7 +219,7 @@
       }
     }
 
-    /* Particle System */
+    /* Particle System - will be hidden when animations are off */
     #particles-js {
       position: fixed;
       width: 100%;
@@ -168,7 +254,7 @@
       -webkit-text-fill-color: transparent;
     }
 
-    /* Sidebar */
+    /* Enhanced Sidebar */
     .sidebar {
       width: var(--sidebar-width);
       background: rgba(0, 0, 0, 0.6);
@@ -186,29 +272,65 @@
       overflow-y: auto;
     }
 
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar-logo {
+      width: 40px;
+      height: 40px;
+      margin-right: 10px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+
     .sidebar h2 {
       font-size: 1.4em;
       background: linear-gradient(90deg, var(--primary), var(--secondary));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 25px;
+      margin-bottom: 0;
+    }
+
+    .sidebar-section {
+      margin-bottom: 20px;
+    }
+
+    .sidebar-section-title {
+      font-size: 0.8em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+      padding-left: 12px;
+      letter-spacing: 1px;
     }
 
     .sidebar a {
       display: flex;
       align-items: center;
       padding: 10px 12px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       border-radius: 8px;
       text-decoration: none;
       color: var(--text-secondary);
-      transition: 0.3s;
+      transition: all 0.3s ease;
       font-size: 0.95em;
     }
 
     .sidebar a i {
       margin-right: 10px;
       color: var(--secondary);
+      width: 20px;
+      text-align: center;
     }
 
     .sidebar a:hover,
@@ -217,12 +339,69 @@
       color: var(--text-primary);
     }
 
+    .sidebar a .badge {
+      margin-left: auto;
+      background: var(--accent);
+      color: white;
+      font-size: 0.7em;
+      padding: 2px 6px;
+      border-radius: 10px;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      padding: 8px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 10px;
+      color: white;
+      font-weight: bold;
+    }
+
+    .user-info {
+      flex: 1;
+    }
+
+    .user-name {
+      font-size: 0.9em;
+      font-weight: bold;
+    }
+
+    .user-status {
+      font-size: 0.75em;
+      color: var(--text-secondary);
+    }
+
+    .user-status.online {
+      color: #2ed573;
+    }
+
     /* Main content */
     .main {
       margin-left: var(--main-margin);
       padding: 40px 20px;
       flex: 1;
       transition: margin-left 0.3s ease, padding 0.3s ease;
+      overflow-y: auto;
+      max-height: 100vh;
     }
 
     .welcome {
@@ -365,6 +544,24 @@
         top: 80px;
         right: 15px;
       }
+
+      /* Timeline adjustments for mobile */
+      .timeline::before {
+        left: 20px;
+      }
+
+      .timeline-item {
+        flex-direction: row !important;
+      }
+
+      .timeline-content {
+        width: calc(100% - 60px);
+        margin-left: 40px;
+      }
+
+      .timeline-dot {
+        left: 20px;
+      }
     }
 
     @media (max-width: 480px) {
@@ -375,6 +572,10 @@
 
       .welcome {
         margin-bottom: 30px;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
       }
     }
 
@@ -391,6 +592,7 @@
     }
 
     .mission-section {
+      position: relative;
       background: var(--card-bg);
       border-radius: 18px;
       padding: 30px;
@@ -398,6 +600,15 @@
       backdrop-filter: blur(15px);
       border: 1px solid rgba(255, 255, 255, 0.1);
       transition: all 0.5s ease;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: cardAppear 0.5s ease forwards;
+    }
+
+    .mission-section:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px var(--primary);
+      border-color: var(--secondary);
     }
 
     .mission-section h2 {
@@ -420,6 +631,7 @@
     }
 
     .feature-card {
+      position: relative;
       background: var(--card-bg);
       border-radius: 12px;
       padding: 20px;
@@ -427,10 +639,30 @@
       backdrop-filter: blur(15px);
       border: 1px solid rgba(255, 255, 255, 0.1);
       transition: all 0.3s ease;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: cardAppear 0.5s ease forwards;
+      overflow: hidden;
+    }
+
+    /* Enhanced card hover effects */
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.7s ease;
+    }
+
+    .feature-card:hover::before {
+      left: 100%;
     }
 
     .feature-card:hover {
-      transform: translateY(-5px);
+      transform: translateY(-10px);
       box-shadow: 0 8px 25px var(--primary);
       border-color: var(--secondary);
     }
@@ -440,6 +672,8 @@
       color: var(--secondary);
       margin-bottom: 15px;
       transition: all 0.3s ease;
+      position: relative;
+      z-index: 2;
     }
 
     .feature-card:hover i {
@@ -449,11 +683,15 @@
     .feature-card h3 {
       margin-bottom: 10px;
       font-size: 1.3rem;
+      position: relative;
+      z-index: 2;
     }
 
     .feature-card p {
       color: var(--text-secondary);
       line-height: 1.6;
+      position: relative;
+      z-index: 2;
     }
 
     .timeline {
@@ -476,6 +714,9 @@
       display: flex;
       margin-bottom: 40px;
       position: relative;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: cardAppear 0.5s ease forwards;
     }
 
     .timeline-item:nth-child(odd) {
@@ -483,6 +724,7 @@
     }
 
     .timeline-content {
+      position: relative;
       background: var(--card-bg);
       border-radius: 12px;
       padding: 20px;
@@ -490,6 +732,22 @@
       backdrop-filter: blur(15px);
       border: 1px solid rgba(255, 255, 255, 0.1);
       transition: all 0.3s ease;
+    }
+
+    /* Enhanced timeline hover effects */
+    .timeline-content::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.7s ease;
+    }
+
+    .timeline-content:hover::before {
+      left: 100%;
     }
 
     .timeline-content:hover {
@@ -502,6 +760,8 @@
       font-weight: bold;
       color: var(--secondary);
       margin-bottom: 10px;
+      position: relative;
+      z-index: 2;
     }
 
     .timeline-dot {
@@ -519,6 +779,14 @@
     .timeline-item:hover .timeline-dot {
       transform: translateX(-50%) scale(1.2);
       box-shadow: 0 0 15px var(--secondary);
+    }
+
+    /* Card animation */
+    @keyframes cardAppear {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     /* Resize indicator */
@@ -567,6 +835,43 @@
         transform: translateY(100vh) rotate(360deg);
       }
     }
+
+    /* Loading animation */
+    .loader {
+      display: none;
+      text-align: center;
+      margin: 40px 0;
+    }
+
+    .loader .dot {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--secondary);
+      margin: 0 5px;
+      animation: bounce 1.5s infinite ease-in-out;
+    }
+
+    .loader .dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .loader .dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-15px);
+      }
+    }
   </style>
 </head>
 
@@ -574,23 +879,53 @@
 
   <!-- Header for mobile -->
   <div class="header">
-    <h1>QuanCliX</h1>
+    <h1>Qauzium</h1>
     <button class="toggle-btn" id="sidebarToggle">
       <i class="fas fa-bars"></i>
     </button>
   </div>
 
-  <!-- Sidebar -->
+  <!-- Enhanced Sidebar -->
   <div class="sidebar" id="sidebar">
-    <h2>Qauzium</h2>
-    <a href="../index.html"><i class="fas fa-home"></i> Home</a>
-    <a href="explore.html"><i class="fas fa-compass"></i> Explore</a>
-    <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
-    <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
-    <a href="dev.html"><i class="fas fa-code"></i> Developers</a>
-    <a href="about.html" class="active"><i class="fas fa-info-circle"></i> About</a>
-    <div style="margin-top: auto; padding: 15px 0;">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">Q</div>
+      <h2>Qauzium</h2>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Main</div>
+      <a href="../index.html"><i class="fas fa-home"></i> Home</a>
+      <a href="explore.html"><i class="fas fa-compass"></i> Explore</a>
+      <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+      <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+      <a href="dev.html"><i class="fas fa-code"></i> Developers</a>
+      <a href="about.html" class="active"><i class="fas fa-info-circle"></i> About</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Content</div>
+      <a href="gallery/gallery.html"><i class="fas fa-images"></i> Gallery</a>
+      <a href="Games/games.html"><i class="fas fa-gamepad"></i> Mini-Games <span class="badge">Popular</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Tools</div>
+      <a href="project1.html"><i class="fas fa-code"></i> Project One</a>
+      <a href="project2.html"><i class="fas fa-brain"></i> Project Two</a>
+      <a href="concepts.html"><i class="fas fa-lightbulb"></i> Concepts</a>
+      <a href="#"><i class="fas fa-calculator"></i> Qulator <span class="badge">Soon</span></a>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="user-profile">
+        <div class="user-avatar">U</div>
+        <div class="user-info">
+          <div class="user-name">User Name</div>
+          <div class="user-status online">Online</div>
+        </div>
+      </div>
       <a href="#" id="theme-toggle"><i class="fas fa-moon"></i> Dark Mode</a>
+      <a href="#" id="animations-toggle"><i class="fas fa-play-circle"></i> Animations: On</a>
     </div>
   </div>
 
@@ -617,12 +952,12 @@
         <span id="seasonText">Season</span>
       </div>
 
-      <div class="about-header">
+      <section class="welcome">
         <h1>About Qauzium</h1>
         <p>Innovative solutions for the modern web</p>
-      </div>
+      </section>
 
-      <div class="mission-section">
+      <div class="mission-section" style="animation-delay: 0.1s">
         <h2>Our Mission</h2>
         <p>Qauzium was founded with a simple goal: to create intuitive, powerful, and beautiful web applications that
           solve real-world problems. We believe that technology should empower users, not complicate their lives.</p>
@@ -631,32 +966,32 @@
       </div>
 
       <div class="features-grid">
-        <div class="feature-card">
+        <div class="feature-card" style="animation-delay: 0.2s">
           <i class="fas fa-bolt"></i>
           <h3>Fast Performance</h3>
           <p>Optimized code and efficient architecture ensure lightning-fast load times and smooth interactions.</p>
         </div>
 
-        <div class="feature-card">
+        <div class="feature-card" style="animation-delay: 0.3s">
           <i class="fas fa-mobile-alt"></i>
           <h3>Responsive Design</h3>
           <p>Our applications work seamlessly across all devices, from desktop to mobile.</p>
         </div>
 
-        <div class="feature-card">
+        <div class="feature-card" style="animation-delay: 0.4s">
           <i class="fas fa-shield-alt"></i>
           <h3>Secure</h3>
           <p>Security is our priority, with robust measures to protect user data and privacy.</p>
         </div>
 
-        <div class="feature-card">
+        <div class="feature-card" style="animation-delay: 0.5s">
           <i class="fas fa-sync-alt"></i>
           <h3>Regular Updates</h3>
           <p>We continuously improve our products with new features and enhancements.</p>
         </div>
       </div>
 
-      <div class="mission-section">
+      <div class="mission-section" style="animation-delay: 0.6s">
         <h2>Our Story</h2>
         <p>Qauzium began as a passion project between two developers who wanted to create something meaningful. What
           started as a small side project quickly grew into a full-fledged platform with a dedicated team of talented
@@ -666,16 +1001,16 @@
       </div>
 
       <div class="timeline">
-        <div class="timeline-item">
+        <div class="timeline-item" style="animation-delay: 0.7s">
           <div class="timeline-content">
             <div class="timeline-date">January 2022</div>
             <h3>Project Conception</h3>
-            <p>Initial idea and planning for QuanCliX began.</p>
+            <p>Initial idea and planning for Qauzium began.</p>
           </div>
           <div class="timeline-dot"></div>
         </div>
 
-        <div class="timeline-item">
+        <div class="timeline-item" style="animation-delay: 0.8s">
           <div class="timeline-content">
             <div class="timeline-date">June 2022</div>
             <h3>First Prototype</h3>
@@ -684,7 +1019,7 @@
           <div class="timeline-dot"></div>
         </div>
 
-        <div class="timeline-item">
+        <div class="timeline-item" style="animation-delay: 0.9s">
           <div class="timeline-content">
             <div class="timeline-date">December 2022</div>
             <h3>Beta Launch</h3>
@@ -693,11 +1028,11 @@
           <div class="timeline-dot"></div>
         </div>
 
-        <div class="timeline-item">
+        <div class="timeline-item" style="animation-delay: 1.0s">
           <div class="timeline-content">
             <div class="timeline-date">May 2023</div>
             <h3>Official Launch</h3>
-            <p>Public release of QuanCliX with full feature set.</p>
+            <p>Public release of Qauzium with full feature set.</p>
           </div>
           <div class="timeline-dot"></div>
         </div>
@@ -714,10 +1049,107 @@
     const overlay = document.getElementById('overlay');
     const sidebarToggle = document.getElementById('sidebarToggle');
     const themeToggle = document.getElementById('theme-toggle');
+    const animationsToggle = document.getElementById('animations-toggle');
     const resizeIndicator = document.getElementById('resizeIndicator');
     const seasonIndicator = document.getElementById('seasonIndicator');
     const seasonText = document.getElementById('seasonText');
     const seasonIcon = document.getElementById('seasonIcon');
+
+    // Settings management
+    const settings = {
+      animationsEnabled: true,
+      theme: 'dark'
+    };
+
+    // Load settings from localStorage
+    function loadSettings() {
+      const savedSettings = localStorage.getItem('qauziumSettings');
+      if (savedSettings) {
+        Object.assign(settings, JSON.parse(savedSettings));
+      }
+      
+      // Apply loaded settings
+      applySettings();
+    }
+
+    // Save settings to localStorage
+    function saveSettings() {
+      localStorage.setItem('qauziumSettings', JSON.stringify(settings));
+    }
+
+    // Apply settings to the UI
+    function applySettings() {
+      // Apply animation setting
+      if (settings.animationsEnabled) {
+        document.body.classList.remove('no-animations');
+        animationsToggle.innerHTML = '<i class="fas fa-play-circle"></i> Animations: On';
+        
+        // Show particles
+        document.getElementById('particles-js').style.display = 'block';
+        
+        // Re-enable all animations by removing inline styles
+        document.querySelectorAll('.welcome, .mission-section, .feature-card, .timeline-item').forEach(el => {
+          el.style.animation = '';
+          el.style.opacity = '';
+          el.style.transform = '';
+        });
+        
+        // Re-enable hover effects
+        document.querySelectorAll('.feature-card, .timeline-content').forEach(card => {
+          card.style.setProperty('--animations-enabled', '1');
+        });
+
+        // Reinitialize particles if needed
+        if (window.pJSDom && window.pJSDom[0]) {
+          window.pJSDom[0].pJS.fn.particlesRefresh();
+        }
+      } else {
+        document.body.classList.add('no-animations');
+        animationsToggle.innerHTML = '<i class="fas fa-pause-circle"></i> Animations: Off';
+        
+        // Hide particles completely
+        document.getElementById('particles-js').style.display = 'none';
+        
+        // Force disable all UI animations with inline styles
+        document.querySelectorAll('.welcome').forEach(el => {
+          el.style.animation = 'none';
+          el.style.opacity = '1';
+        });
+        
+        document.querySelectorAll('.mission-section, .feature-card, .timeline-item').forEach(card => {
+          card.style.animation = 'none';
+          card.style.opacity = '1';
+          card.style.transform = 'none';
+        });
+        
+        // Remove seasonal decorations
+        document.querySelectorAll('.season-decoration').forEach(el => el.remove());
+        
+        // Disable hover effects
+        document.querySelectorAll('.feature-card, .timeline-content').forEach(card => {
+          card.style.setProperty('--animations-enabled', '0');
+        });
+      }
+
+      // Apply theme setting
+      if (settings.theme === 'light') {
+        document.body.classList.add('light-theme');
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+        // Update CSS variables for light theme
+        document.documentElement.style.setProperty('--dark-bg', '#f5f5f5');
+        document.documentElement.style.setProperty('--card-bg', 'rgba(255, 255, 255, 0.8)');
+        document.documentElement.style.setProperty('--text-primary', '#333');
+        document.documentElement.style.setProperty('--text-secondary', '#666');
+      } else {
+        document.body.classList.remove('light-theme');
+        themeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+        // Revert to dark theme variables
+        document.documentElement.style.setProperty('--dark-bg', '#121212');
+        document.documentElement.style.setProperty('--card-bg', 'rgba(255, 255, 255, 0.05)');
+        document.documentElement.style.setProperty('--text-primary', '#fff');
+        document.documentElement.style.setProperty('--text-secondary', '#bbb');
+      }
+    }
 
     // Seasonal data
     const seasons = {
@@ -809,8 +1241,10 @@
       // Update particles for the season
       updateParticles(season);
 
-      // Add seasonal decorations
-      addSeasonalDecorations(season);
+      // Only add seasonal decorations if animations are enabled
+      if (settings.animationsEnabled) {
+        addSeasonalDecorations(season);
+      }
     }
 
     // Update particles based on season
@@ -833,6 +1267,9 @@
     function addSeasonalDecorations(season) {
       // Remove existing decorations
       document.querySelectorAll('.season-decoration').forEach(el => el.remove());
+
+      // Only add decorations if animations are enabled
+      if (!settings.animationsEnabled) return;
 
       const decorationContainer = document.createElement('div');
       decorationContainer.className = 'season-decoration';
@@ -881,6 +1318,12 @@
 
     // Initialize particle system
     function initParticles() {
+      // Only initialize particles if animations are enabled
+      if (!settings.animationsEnabled) {
+        document.getElementById('particles-js').style.display = 'none';
+        return;
+      }
+
       particlesJS('particles-js', {
         particles: {
           number: { value: 40, density: { enable: true, value_area: 800 } },
@@ -940,6 +1383,7 @@
         const isDark = document.body.classList.toggle('light-theme');
 
         if (isDark) {
+          settings.theme = 'light';
           themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
           // Update CSS variables for light theme
           document.documentElement.style.setProperty('--dark-bg', '#f5f5f5');
@@ -947,6 +1391,7 @@
           document.documentElement.style.setProperty('--text-primary', '#333');
           document.documentElement.style.setProperty('--text-secondary', '#666');
         } else {
+          settings.theme = 'dark';
           themeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
           // Revert to dark theme variables
           document.documentElement.style.setProperty('--dark-bg', '#121212');
@@ -955,11 +1400,44 @@
           document.documentElement.style.setProperty('--text-secondary', '#bbb');
         }
 
+        // Save settings
+        saveSettings();
+
         // Remove transition class after theme change
         setTimeout(() => {
           document.body.classList.remove('theme-transition');
         }, 500);
       }, 100);
+    });
+
+    // Animations toggle functionality
+    animationsToggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      
+      settings.animationsEnabled = !settings.animationsEnabled;
+      
+      // Apply the setting
+      applySettings();
+      
+      // Reapply seasonal theme to handle decorations
+      const currentSeason = getCurrentSeason();
+      applySeasonalTheme(currentSeason);
+      
+      // Save settings
+      saveSettings();
+    });
+
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      // Load settings first
+      loadSettings();
+      
+      // Initialize particles
+      initParticles();
+
+      // Apply seasonal theme
+      const currentSeason = getCurrentSeason();
+      applySeasonalTheme(currentSeason);
     });
 
     // Window resize handler
@@ -991,19 +1469,8 @@
       }
     });
 
-    // Initialize when page loads
-    document.addEventListener('DOMContentLoaded', () => {
-      // Initialize particles
-      initParticles();
-
-      // Apply seasonal theme
-      const currentSeason = getCurrentSeason();
-      applySeasonalTheme(currentSeason);
-    });
-
     // Initial call to handle responsive layout on load
     window.dispatchEvent(new Event('resize'));
   </script>
 </body>
-
 </html>
