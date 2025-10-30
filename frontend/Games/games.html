@@ -913,17 +913,17 @@
     <div class="stats-grid">
       <div class="stat-card">
         <i class="fas fa-gamepad"></i>
-        <div class="stat-number">4</div>
+        <div class="stat-number">2</div>
         <div class="stat-label">Total Games</div>
       </div>
       <div class="stat-card">
         <i class="fas fa-play-circle"></i>
-        <div class="stat-number">1</div>
+        <div class="stat-number">2</div>
         <div class="stat-label">Available Now</div>
       </div>
       <div class="stat-card">
         <i class="fas fa-clock"></i>
-        <div class="stat-number">3</div>
+        <div class="stat-number">0</div>
         <div class="stat-label">Coming Soon</div>
       </div>
       <div class="stat-card">
@@ -943,7 +943,7 @@
           </div>
           <div class="game-info">
             <h3>Rytris</h3>
-            <p>A tetris based game with modern twists</p>
+            <p>A Tetris-based game with gravity-based falling blocks</p>
           </div>
         </div>
         <div class="game-stats">
@@ -966,97 +966,35 @@
         </a>
       </div>
 
-      <!-- Quantum Strike -->
+      <!-- Ryblast -->
       <div class="game-card" style="animation-delay: 0.2s">
         <div class="game-header">
           <div class="game-icon">
-            <i class="fas fa-crosshairs"></i>
+            <i class="fas fa-hand-pointer"></i>
           </div>
           <div class="game-info">
-            <h3>Quantum Strike</h3>
-            <p>Fast-paced multiplayer FPS action</p>
+            <h3>Ryblast</h3>
+            <p>Drag and drop blocks to create matches and clear the board</p>
           </div>
         </div>
         <div class="game-stats">
           <div class="stat">
-            <div class="stat-value" id="quantumRating">4.9</div>
-            <div class="rating-stars" id="quantumStars">★★★★★</div>
+            <div class="stat-value" id="ryblastRating">4.7</div>
+            <div class="rating-stars" id="ryblastStars">★★★★★</div>
             <div class="stat-label">Rating</div>
           </div>
           <div class="stat">
-            <div class="stat-value" id="quantumPlays">2,347</div>
+            <div class="stat-value" id="ryblastPlays">0</div>
             <div class="stat-label">Plays</div>
           </div>
           <div class="stat">
-            <div class="stat-value">Action</div>
+            <div class="stat-value">Arcade</div>
             <div class="stat-label">Genre</div>
           </div>
         </div>
-        <button class="play-btn coming-soon">
-          <i class="fas fa-clock"></i> Coming Soon
-        </button>
-      </div>
-
-      <!-- Neon Racer -->
-      <div class="game-card" style="animation-delay: 0.3s">
-        <div class="game-header">
-          <div class="game-icon">
-            <i class="fas fa-car"></i>
-          </div>
-          <div class="game-info">
-            <h3>Neon Racer</h3>
-            <p>High-speed racing in futuristic cities</p>
-          </div>
-        </div>
-        <div class="game-stats">
-          <div class="stat">
-            <div class="stat-value" id="neonRating">-</div>
-            <div class="rating-stars" id="neonStars">-</div>
-            <div class="stat-label">Rating</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value" id="neonPlays">0</div>
-            <div class="stat-label">Plays</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value">Racing</div>
-            <div class="stat-label">Genre</div>
-          </div>
-        </div>
-        <button class="play-btn coming-soon">
-          <i class="fas fa-clock"></i> Coming Soon
-        </button>
-      </div>
-
-      <!-- Puzzle Quest -->
-      <div class="game-card" style="animation-delay: 0.4s">
-        <div class="game-header">
-          <div class="game-icon">
-            <i class="fas fa-brain"></i>
-          </div>
-          <div class="game-info">
-            <h3>Puzzle Quest</h3>
-            <p>Challenge your mind with brain teasers</p>
-          </div>
-        </div>
-        <div class="game-stats">
-          <div class="stat">
-            <div class="stat-value" id="puzzleRating">-</div>
-            <div class="rating-stars" id="puzzleStars">-</div>
-            <div class="stat-label">Rating</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value" id="puzzlePlays">0</div>
-            <div class="stat-label">Plays</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value">Puzzle</div>
-            <div class="stat-label">Genre</div>
-          </div>
-        </div>
-        <button class="play-btn coming-soon">
-          <i class="fas fa-clock"></i> Coming Soon
-        </button>
+        <a href="Ryblast.html" class="play-btn" id="ryblastPlayBtn">
+          <i class="fas fa-play"></i> Play Now
+        </a>
       </div>
     </div>
 
@@ -1189,10 +1127,10 @@
         // Create some simulated players
         const simulatedPlayers = [
           { playerId: 'sim1', playerName: 'QuantumGamer42', lastSeen: Date.now() - 10000, currentGame: 'rytris' },
-          { playerId: 'sim2', playerName: 'NeonRacer99', lastSeen: Date.now() - 30000, currentGame: null },
+          { playerId: 'sim2', playerName: 'NeonRacer99', lastSeen: Date.now() - 30000, currentGame: 'ryblast' },
           { playerId: 'sim3', playerName: 'CyberStriker', lastSeen: Date.now() - 15000, currentGame: 'rytris' },
           { playerId: 'sim4', playerName: 'DigitalMaster', lastSeen: Date.now() - 45000, currentGame: null },
-          { playerId: 'sim5', playerName: 'VirtualHero', lastSeen: Date.now() - 20000, currentGame: 'rytris' }
+          { playerId: 'sim5', playerName: 'VirtualHero', lastSeen: Date.now() - 20000, currentGame: 'ryblast' }
         ];
 
         // Add current player
@@ -1248,9 +1186,7 @@
       getGameName(gameId) {
         const games = {
           rytris: 'Rytris',
-          quantumStrike: 'Quantum Strike',
-          neonRacer: 'Neon Racer',
-          puzzleQuest: 'Puzzle Quest'
+          ryblast: 'Ryblast'
         };
         return games[gameId] || gameId;
       }
@@ -1297,9 +1233,7 @@
       constructor() {
         this.games = {
           rytris: this.loadGameData('rytris'),
-          quantumStrike: this.loadGameData('quantumStrike'),
-          neonRacer: this.loadGameData('neonRacer'),
-          puzzleQuest: this.loadGameData('puzzleQuest')
+          ryblast: this.loadGameData('ryblast')
         };
       }
 
@@ -1316,10 +1250,13 @@
           lastPlayed: null
         };
 
-        // Pre-populate Quantum Strike with some data
-        if (gameId === 'quantumStrike') {
-          defaultData.plays = 2347;
-          defaultData.ratings = [5, 5, 4, 5, 5, 4, 5, 5, 5, 4, 5, 5, 4, 5, 5, 5, 4, 5];
+        // Pre-populate with some data
+        if (gameId === 'rytris') {
+          defaultData.plays = 156;
+          defaultData.ratings = [5, 5, 4, 5, 5, 4, 5, 5, 5, 4, 5, 5];
+        } else if (gameId === 'ryblast') {
+          defaultData.plays = 89;
+          defaultData.ratings = [5, 4, 5, 5, 4, 5, 5, 4, 5, 5];
         }
 
         return defaultData;
@@ -1358,7 +1295,7 @@
 
     function updateStats() {
       // Update each game's stats
-      ['rytris', 'quantumStrike', 'neonRacer', 'puzzleQuest'].forEach(gameId => {
+      ['rytris', 'ryblast'].forEach(gameId => {
         const plays = statsManager.games[gameId].plays;
         const rating = statsManager.getAverageRating(gameId);
 
@@ -1448,6 +1385,10 @@
       // Set up play button tracking
       document.getElementById('rytrisPlayBtn').addEventListener('click', () => {
         handleGamePlay('rytris');
+      });
+
+      document.getElementById('ryblastPlayBtn').addEventListener('click', () => {
+        handleGamePlay('ryblast');
       });
 
       // Start multiplayer tracking
