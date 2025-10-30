@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Qauzium OS</title>
+  <title>Qauzium</title>
   <link rel="icon" href="frontend/logos/logo.png" type="image/png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
@@ -70,6 +70,9 @@
       width: 100%;
       height: 100%;
       z-index: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     /* Desktop Icons */
@@ -569,7 +572,7 @@
     }
 
     .hero-headline {
-      font-size: 2.5em;
+      font-size: 3.5em;
       font-weight: bold;
       margin-bottom: 15px;
       color: #ffffff;
@@ -584,7 +587,7 @@
     }
 
     .hero-subheadline {
-      font-size: 1.2em;
+      font-size: 1.5em;
       color: var(--secondary);
       margin-bottom: 25px;
       text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
@@ -634,6 +637,14 @@
       .taskbar-app span {
         display: none;
       }
+      
+      .hero-headline {
+        font-size: 2.5em;
+      }
+      
+      .hero-subheadline {
+        font-size: 1.2em;
+      }
     }
 
     @media (max-width: 480px) {
@@ -645,6 +656,14 @@
       
       .desktop-icons {
         display: none;
+      }
+      
+      .hero-headline {
+        font-size: 2em;
+      }
+      
+      .hero-subheadline {
+        font-size: 1em;
       }
     }
   </style>
@@ -687,7 +706,7 @@
     </div>
 
     <div class="hero-content">
-      <h1 class="hero-headline">Qauzium OS</h1>
+      <h1 class="hero-headline">Qauzium</h1>
       <p class="hero-subheadline">Where Logic Becomes Art</p>
       <a href="frontend/explore.html" class="hero-button">Explore</a>
     </div>
@@ -822,7 +841,7 @@
   <!-- Start Menu -->
   <div class="start-menu" id="startMenu">
     <div class="start-menu-header">
-      <h2>Qauzium OS</h2>
+      <h2>Qauzium</h2>
       <p>Where Logic Becomes Art</p>
     </div>
     <div class="start-menu-apps">
