@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Snake</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #007bff;
+            --secondary: #00eaff;
+            --accent: #ff4757;
+            --dark-bg: #121212;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text-primary: #fff;
+            --text-secondary: #bbb;
+        }
+
+        /* Seasonal Themes */
+        .season-winter {
+            --primary: #4dabf5;
+            --secondary: #a5d8ff;
+            --accent: #ff8787;
+            --dark-bg: #0f1a2a;
+        }
+
+        .season-spring {
+            --primary: #69db7c;
+            --secondary: #b2f2bb;
+            --accent: #ffa94d;
+            --dark-bg: #1a2f1a;
+        }
+
+        .season-summer {
+            --primary: #ffd43b;
+            --secondary: #ffec99;
+            --accent: #ff6b6b;
+            --dark-bg: #2a1f0f;
+        }
+
+        .season-autumn {
+            --primary: #e8590c;
+            --secondary: #ffc078;
+            --accent: #cc5de8;
+            --dark-bg: #2a1a0f;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: radial-gradient(circle at top, #0f2027, var(--dark-bg));
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: all 0.8s ease;
+        }
+
+        /* Seasonal Background Overlays */
+        .season-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.15;
+            transition: opacity 0.8s ease;
+        }
+
+        .winter-overlay {
+            background:
+                radial-gradient(circle at 20% 80%, rgba(180, 220, 255, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(230, 240, 255, 0.2) 0%, transparent 50%),
+                linear-gradient(45deg, rgba(100, 150, 200, 0.1) 0%, transparent 50%);
+        }
+
+        .spring-overlay {
+            background:
+                radial-gradient(circle at 30% 70%, rgba(150, 240, 180, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 70% 30%, rgba(220, 255, 200, 0.2) 0%, transparent 50%),
+                linear-gradient(45deg, rgba(120, 220, 160, 0.1) 0%, transparent 50%);
+        }
+
+        .summer-overlay {
+            background:
+                radial-gradient(circle at 40% 60%, rgba(255, 230, 100, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 60% 40%, rgba(255, 240, 150, 0.2) 0%, transparent 50%),
+                linear-gradient(45deg, rgba(255, 200, 80, 0.1) 0%, transparent 50%);
+        }
+
+        .autumn-overlay {
+            background:
+                radial-gradient(circle at 25% 75%, rgba(220, 150, 80, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 75% 25%, rgba(240, 180, 100, 0.2) 0%, transparent 50%),
+                linear-gradient(45deg, rgba(200, 130, 60, 0.1) 0%, transparent 50%);
+        }
+
+        /* Background grid */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveGrid 25s linear infinite;
+            z-index: -2;
+        }
+
+        @keyframes moveGrid {
+            from {
+                background-position: 0 0, 0 0;
+            }
+            to {
+                background-position: 100px 100px, 100px 100px;
+            }
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            flex-shrink: 0;
+            height: 70px;
+        }
+
+        .header h1 {
+            font-size: 1.5em;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Season indicator */
+        .season-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .season-indicator i {
+            color: var(--secondary);
+        }
+
+        /* Dashboard button */
+        .dashboard-btn {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-size: 0.9em;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .dashboard-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--primary);
+        }
+
+        /* Main container */
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 1000px;
+            width: 100%;
+            flex: 1;
+            padding: 20px;
+        }
+
+        /* Game area */
+        .game-area {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            width: 100%;
+        }
+
+        /* Game container */
+        .game-container {
+            position: relative;
+            border: 3px solid var(--primary);
+            border-radius: 10px;
+            box-shadow: 0 0 25px rgba(0, 180, 219, 0.4);
+            overflow: hidden;
+        }
+
+        canvas {
+            background-color: #0a1929;
+            display: block;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 300px;
+            width: 100%;
+        }
+
+        .panel {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 180, 219, 0.3);
+        }
+
+        h2 {
+            color: var(--secondary);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            border-bottom: 1px solid rgba(77, 208, 225, 0.3);
+            padding-bottom: 8px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .instructions {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--text-secondary);
+        }
+
+        .quantum-features {
+            margin-top: 15px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .feature-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(to right, var(--accent), #ff6b81);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 6px 8px var(--accent);
+        }
+
+        /* MOBILE LAYOUT */
+        .mobile-layout {
+            display: none;
+            flex: 1;
+            padding: 10px;
+            flex-direction: column;
+            width: 100%;
+            height: calc(100vh - 70px);
+            position: relative;
+        }
+
+        .mobile-game-container {
+            display: flex;
+            flex: 1;
+            gap: 15px;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            height: 100%;
+            position: relative;
+        }
+
+        /* Stats on LEFT side for mobile */
+        .mobile-stats-left {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100px;
+            flex-shrink: 0;
+        }
+
+        .mobile-info-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px 10px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .mobile-info-card h3 {
+            margin-bottom: 8px;
+            color: var(--secondary);
+            font-size: 0.8em;
+        }
+
+        .mobile-score-display {
+            font-size: 1.3em;
+            font-weight: bold;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .mobile-level-display {
+            font-size: 1.1em;
+            color: var(--text-primary);
+        }
+
+        .mobile-length-display {
+            font-size: 1.1em;
+            color: var(--text-primary);
+        }
+
+        .mobile-quantum-display {
+            font-size: 1.1em;
+            color: var(--text-primary);
+        }
+
+        /* Game area for mobile */
+        .mobile-game-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+            height: 100%;
+            position: relative;
+            padding-bottom: 120px; /* Space for controls */
+        }
+
+        /* Mobile controls at BOTTOM - FIXED POSITION */
+        .mobile-controls {
+            display: none;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 10px;
+            width: 100%;
+            max-width: 300px;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0 10px;
+        }
+
+        .mobile-btn {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(15px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-btn.up {
+            grid-column: 2;
+            grid-row: 1;
+        }
+
+        .mobile-btn.left {
+            grid-column: 1;
+            grid-row: 2;
+        }
+
+        .mobile-btn.down {
+            grid-column: 2;
+            grid-row: 2;
+        }
+
+        .mobile-btn.right {
+            grid-column: 3;
+            grid-row: 2;
+        }
+
+        /* Game over modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .modal h2 {
+            margin-bottom: 15px;
+            color: var(--secondary);
+        }
+
+        .modal p {
+            margin-bottom: 20px;
+            color: var(--text-secondary);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                display: none;
+            }
+
+            .mobile-layout {
+                display: flex;
+            }
+
+            .mobile-controls {
+                display: grid;
+            }
+
+            #snake-game-mobile {
+                width: 100%;
+                max-width: 300px;
+                height: 450px; /* Reduced height to fit with controls */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.2em;
+            }
+
+            .mobile-layout {
+                padding: 5px;
+            }
+
+            .mobile-game-container {
+                max-width: 100%;
+                padding: 0 5px;
+            }
+
+            .mobile-stats-left {
+                width: 80px;
+            }
+
+            .mobile-info-card {
+                padding: 10px 5px;
+            }
+
+            .mobile-info-card h3 {
+                font-size: 0.7em;
+            }
+
+            .mobile-score-display {
+                font-size: 1.1em;
+            }
+
+            .mobile-level-display,
+            .mobile-length-display,
+            .mobile-quantum-display {
+                font-size: 1em;
+            }
+
+            #snake-game-mobile {
+                max-width: 280px;
+                height: 400px; /* Further reduced for smaller screens */
+            }
+
+            .mobile-game-area {
+                padding-bottom: 110px; /* Adjusted for smaller screens */
+            }
+        }
+
+        @media (max-height: 700px) {
+            #snake-game-mobile {
+                height: 350px; /* Further reduced for short screens */
+            }
+            
+            .mobile-game-area {
+                padding-bottom: 100px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Seasonal Overlays -->
+    <div class="season-overlay winter-overlay" id="winterOverlay"></div>
+    <div class="season-overlay spring-overlay" id="springOverlay"></div>
+    <div class="season-overlay summer-overlay" id="summerOverlay"></div>
+    <div class="season-overlay autumn-overlay" id="autumnOverlay"></div>
+
+    <!-- Header -->
+    <div class="header">
+        <h1>Quantum Snake</h1>
+        <div class="season-indicator" id="seasonIndicator">
+            <i class="fas fa-leaf" id="seasonIcon"></i>
+            <span id="seasonText">Season</span>
+        </div>
+        <a href="games.html" class="dashboard-btn">
+            <i class="fas fa-arrow-left"></i> Dashboard
+        </a>
+    </div>
+
+    <!-- Desktop Layout -->
+    <div class="container">
+        <div class="game-area">
+            <div class="game-container">
+                <canvas id="snake-game" width="400" height="500"></canvas>
+            </div>
+            
+            <div class="controls">
+                <div class="panel">
+                    <h2>Game Stats</h2>
+                    <div class="stats">
+                        <div class="stat">
+                            <span class="stat-value" id="score">0</span>
+                            <span class="stat-label">Score</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value" id="level">1</span>
+                            <span class="stat-label">Level</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value" id="length">1</span>
+                            <span class="stat-label">Length</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value" id="quantum-level">0%</span>
+                            <span class="stat-label">Quantum Level</span>
+                        </div>
+                    </div>
+                    
+                    <div class="buttons">
+                        <button id="startButton">Start Game</button>
+                        <button id="pauseButton">Pause</button>
+                    </div>
+                </div>
+                
+                <div class="panel">
+                    <h2>Quantum Features</h2>
+                    <div class="quantum-features">
+                        <div class="feature">
+                            <div class="feature-icon">⚛️</div>
+                            <span>Quantum Tunneling: Pass through walls</span>
+                        </div>
+                        <div class="feature">
+                            <div class="feature-icon">🌀</div>
+                            <span>Superposition: Food exists in multiple states</span>
+                        </div>
+                        <div class="feature">
+                            <div class="feature-icon">⚡</div>
+                            <span>Entanglement: Special food links</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="panel">
+                    <h2>How to Play</h2>
+                    <div class="instructions">
+                        <p>Use <strong>Arrow Keys</strong> or <strong>WASD</strong> to control the snake.</p>
+                        <p>Collect quantum particles (food) to grow and increase your quantum level.</p>
+                        <p>At high quantum levels, you can tunnel through walls!</p>
+                        <p>Avoid colliding with yourself.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Layout -->
+    <div class="mobile-layout">
+        <div class="mobile-game-container">
+            <!-- Stats on LEFT side -->
+            <div class="mobile-stats-left">
+                <div class="mobile-info-card">
+                    <h3>Score</h3>
+                    <div class="mobile-score-display" id="mobile-score">0</div>
+                </div>
+                <div class="mobile-info-card">
+                    <h3>Level</h3>
+                    <div class="mobile-level-display" id="mobile-level">1</div>
+                </div>
+                <div class="mobile-info-card">
+                    <h3>Length</h3>
+                    <div class="mobile-length-display" id="mobile-length">1</div>
+                </div>
+                <div class="mobile-info-card">
+                    <h3>Quantum</h3>
+                    <div class="mobile-quantum-display" id="mobile-quantum">0%</div>
+                </div>
+            </div>
+
+            <!-- Game area -->
+            <div class="mobile-game-area">
+                <!-- Snake board -->
+                <div class="game-container">
+                    <canvas id="snake-game-mobile" width="300" height="450"></canvas>
+                </div>
+
+                <!-- Mobile controls at BOTTOM - FIXED POSITION -->
+                <div class="mobile-controls">
+                    <button class="mobile-btn up" id="up-btn">
+                        <i class="fas fa-arrow-up"></i>
+                    </button>
+                    <button class="mobile-btn left" id="left-btn">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <button class="mobile-btn down" id="down-btn">
+                        <i class="fas fa-arrow-down"></i>
+                    </button>
+                    <button class="mobile-btn right" id="right-btn">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game over modal -->
+    <div class="modal" id="game-over-modal">
+        <div class="modal-content">
+            <h2>Game Over!</h2>
+            <p>Your final score: <span id="final-score">0</span></p>
+            <p>Level reached: <span id="final-level">1</span></p>
+            <p>Snake length: <span id="final-length">1</span></p>
+            <button class="btn" id="play-again-btn">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        // Seasonal data
+        const seasons = {
+            winter: {
+                name: "Winter",
+                icon: "fa-snowflake",
+                months: [11, 0, 1], // Dec, Jan, Feb
+                colors: {
+                    primary: "#4dabf5",
+                    secondary: "#a5d8ff",
+                    accent: "#ff8787",
+                    bg: "#0f1a2a"
+                }
+            },
+            spring: {
+                name: "Spring",
+                icon: "fa-seedling",
+                months: [2, 3, 4], // Mar, Apr, May
+                colors: {
+                    primary: "#69db7c",
+                    secondary: "#b2f2bb",
+                    accent: "#ffa94d",
+                    bg: "#1a2f1a"
+                }
+            },
+            summer: {
+                name: "Summer",
+                icon: "fa-sun",
+                months: [5, 6, 7], // Jun, Jul, Aug
+                colors: {
+                    primary: "#ffd43b",
+                    secondary: "#ffec99",
+                    accent: "#ff6b6b",
+                    bg: "#2a1f0f"
+                }
+            },
+            autumn: {
+                name: "Autumn",
+                icon: "fa-leaf",
+                months: [8, 9, 10], // Sep, Oct, Nov
+                colors: {
+                    primary: "#e8590c",
+                    secondary: "#ffc078",
+                    accent: "#cc5de8",
+                    bg: "#2a1a0f"
+                }
+            }
+        };
+
+        // Quantum Snake game variables
+        const canvas = document.getElementById('snake-game');
+        const ctx = canvas.getContext('2d');
+        const mobileCanvas = document.getElementById('snake-game-mobile');
+        const mobileCtx = mobileCanvas.getContext('2d');
+
+        // Game settings
+        const GRID_SIZE = 20;
+        const GRID_WIDTH = canvas.width / GRID_SIZE;
+        const GRID_HEIGHT = canvas.height / GRID_SIZE;
+        const MOBILE_GRID_WIDTH = mobileCanvas.width / GRID_SIZE;
+        const MOBILE_GRID_HEIGHT = mobileCanvas.height / GRID_SIZE;
+
+        let gridWidth = GRID_WIDTH;
+        let gridHeight = GRID_HEIGHT;
+        let snake = [];
+        let food = {};
+        let direction = 'right';
+        let nextDirection = 'right';
+        let gameRunning = false;
+        let gamePaused = false;
+        let score = 0;
+        let level = 1;
+        let snakeLength = 1;
+        let quantumLevel = 0;
+        let gameLoopId = null;
+        let lastTime = 0;
+        let dropCounter = 0;
+        let dropInterval = 200;
+        let gameOver = false;
+        let particles = [];
+
+        // Quantum abilities
+        let quantumTunneling = false;
+        let quantumFoods = [];
+        let specialFood = null;
+        let specialFoodTimer = 0;
+
+        // Function to determine current season
+        function getCurrentSeason() {
+            const now = new Date();
+            const month = now.getMonth();
+
+            for (const [season, data] of Object.entries(seasons)) {
+                if (data.months.includes(month)) {
+                    return season;
+                }
+            }
+
+            return "winter"; // Default fallback
+        }
+
+        // Apply seasonal theme
+        function applySeasonalTheme(season) {
+            const seasonData = seasons[season];
+
+            // Remove all season classes
+            document.body.classList.remove("season-winter", "season-spring", "season-summer", "season-autumn");
+
+            // Hide all seasonal overlays
+            document.querySelectorAll('.season-overlay').forEach(overlay => {
+                overlay.style.opacity = "0";
+            });
+
+            // Apply the current season class
+            document.body.classList.add(`season-${season}`);
+
+            // Show the current season overlay
+            const currentOverlay = document.getElementById(`${season}Overlay`);
+            if (currentOverlay) {
+                currentOverlay.style.opacity = "0.15";
+            }
+
+            // Update season indicator
+            document.getElementById('seasonText').textContent = seasonData.name;
+            document.getElementById('seasonIcon').className = `fas ${seasonData.icon}`;
+        }
+
+        // Update all score displays
+        function updateScoreDisplays() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('mobile-score').textContent = score;
+            document.getElementById('level').textContent = level;
+            document.getElementById('mobile-level').textContent = level;
+            document.getElementById('length').textContent = snakeLength;
+            document.getElementById('mobile-length').textContent = snakeLength;
+            document.getElementById('quantum-level').textContent = `${Math.min(100, Math.floor(quantumLevel))}%`;
+            document.getElementById('mobile-quantum').textContent = `${Math.min(100, Math.floor(quantumLevel))}%`;
+        }
+
+        // Initialize the game
+        function init() {
+            // Set correct grid dimensions based on device
+            if (window.innerWidth <= 768) {
+                gridWidth = MOBILE_GRID_WIDTH;
+                gridHeight = MOBILE_GRID_HEIGHT;
+            } else {
+                gridWidth = GRID_WIDTH;
+                gridHeight = GRID_HEIGHT;
+            }
+
+            // Initialize snake
+            snake = [{x: 5, y: 10}];
+            direction = 'right';
+            nextDirection = 'right';
+            score = 0;
+            level = 1;
+            snakeLength = 1;
+            quantumLevel = 0;
+            gameOver = false;
+            isPaused = false;
+            dropInterval = 200;
+            dropCounter = 0;
+            particles = [];
+            quantumFoods = [];
+            specialFood = null;
+            specialFoodTimer = 0;
+
+            // Generate initial food
+            generateFood();
+
+            // Update displays
+            updateScoreDisplays();
+
+            // Hide game over modal
+            document.getElementById('game-over-modal').style.display = 'none';
+
+            // Start the game
+            startGame();
+        }
+
+        // Generate food
+        function generateFood() {
+            // Clear any existing quantum foods
+            quantumFoods = [];
+
+            // Generate regular food
+            food = {
+                x: Math.floor(Math.random() * gridWidth),
+                y: Math.floor(Math.random() * gridHeight),
+                type: 'regular'
+            };
+
+            // Generate quantum superposition foods (appear in multiple places)
+            if (quantumLevel > 20) {
+                for (let i = 0; i < Math.min(3, Math.floor(quantumLevel / 20)); i++) {
+                    quantumFoods.push({
+                        x: Math.floor(Math.random() * gridWidth),
+                        y: Math.floor(Math.random() * gridHeight),
+                        type: 'quantum',
+                        alpha: 0.7
+                    });
+                }
+            }
+
+            // Occasionally generate special entangled food
+            if (Math.random() < 0.1) {
+                specialFood = {
+                    x: Math.floor(Math.random() * gridWidth),
+                    y: Math.floor(Math.random() * gridHeight),
+                    type: 'entangled',
+                    timer: 300 // 5 seconds at 60fps
+                };
+                specialFoodTimer = specialFood.timer;
+            }
+        }
+
+        // Draw the game
+        function draw() {
+            // Clear canvas with a dark background
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            mobileCtx.clearRect(0, 0, mobileCanvas.width, mobileCanvas.height);
+
+            // Draw the background
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            mobileCtx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            mobileCtx.fillRect(0, 0, mobileCanvas.width, mobileCanvas.height);
+
+            // Draw the grid
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 0.5;
+            mobileCtx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            mobileCtx.lineWidth = 0.5;
+
+            for (let r = 0; r < gridHeight; r++) {
+                for (let c = 0; c < gridWidth; c++) {
+                    ctx.strokeRect(c * GRID_SIZE, r * GRID_SIZE, GRID_SIZE, GRID_SIZE);
+                    mobileCtx.strokeRect(c * GRID_SIZE, r * GRID_SIZE, GRID_SIZE, GRID_SIZE);
+                }
+            }
+
+            // Draw particles (quantum effects)
+            drawParticles();
+
+            // Draw snake
+            drawSnake();
+
+            // Draw food
+            drawFood();
+
+            // Draw special food if exists
+            if (specialFood) {
+                drawSpecialFood();
+            }
+
+            // Draw quantum foods
+            drawQuantumFoods();
+
+            // Draw quantum tunneling indicator if available
+            if (quantumLevel >= 50) {
+                ctx.fillStyle = 'rgba(0, 180, 219, 0.3)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                mobileCtx.fillStyle = 'rgba(0, 180, 219, 0.3)';
+                mobileCtx.fillRect(0, 0, mobileCanvas.width, mobileCanvas.height);
+
+                ctx.fillStyle = '#00b4db';
+                ctx.font = '14px Arial';
+                ctx.fillText('QUANTUM TUNNELING ACTIVE', 10, 20);
+                mobileCtx.fillStyle = '#00b4db';
+                mobileCtx.font = '14px Arial';
+                mobileCtx.fillText('QUANTUM TUNNELING ACTIVE', 10, 20);
+            }
+        }
+
+        // Draw snake with quantum effects
+        function drawSnake() {
+            // Draw each segment with a gradient and glow effect
+            for (let i = 0; i < snake.length; i++) {
+                const segment = snake[i];
+                
+                // Head is brighter
+                if (i === 0) {
+                    ctx.fillStyle = '#00e5ff';
+                    ctx.shadowColor = '#00e5ff';
+                    ctx.shadowBlur = 15;
+                    mobileCtx.fillStyle = '#00e5ff';
+                    mobileCtx.shadowColor = '#00e5ff';
+                    mobileCtx.shadowBlur = 15;
+                } else {
+                    // Body segments with gradient based on position
+                    const intensity = 1 - (i / snake.length) * 0.7;
+                    ctx.fillStyle = `rgba(0, 180, 219, ${intensity})`;
+                    ctx.shadowColor = 'rgba(0, 180, 219, 0.5)';
+                    ctx.shadowBlur = 10;
+                    mobileCtx.fillStyle = `rgba(0, 180, 219, ${intensity})`;
+                    mobileCtx.shadowColor = 'rgba(0, 180, 219, 0.5)';
+                    mobileCtx.shadowBlur = 10;
+                }
+                
+                // Draw segment with rounded corners
+                ctx.beginPath();
+                ctx.roundRect(
+                    segment.x * GRID_SIZE, 
+                    segment.y * GRID_SIZE, 
+                    GRID_SIZE, 
+                    GRID_SIZE, 
+                    5
+                );
+                ctx.fill();
+                
+                mobileCtx.beginPath();
+                mobileCtx.roundRect(
+                    segment.x * GRID_SIZE, 
+                    segment.y * GRID_SIZE, 
+                    GRID_SIZE, 
+                    GRID_SIZE, 
+                    5
+                );
+                mobileCtx.fill();
+                
+                // Add quantum "glow" particles occasionally
+                if (Math.random() < 0.1) {
+                    particles.push({
+                        x: segment.x * GRID_SIZE + GRID_SIZE/2,
+                        y: segment.y * GRID_SIZE + GRID_SIZE/2,
+                        size: Math.random() * 3 + 1,
+                        color: i === 0 ? '#00e5ff' : '#00b4db',
+                        life: 20
+                    });
+                }
+            }
+            
+            // Reset shadow
+            ctx.shadowBlur = 0;
+            mobileCtx.shadowBlur = 0;
+        }
+
+        // Draw food with quantum effects
+        function drawFood() {
+            // Pulsing effect
+            const pulse = Math.sin(Date.now() / 200) * 0.2 + 0.8;
+            
+            ctx.fillStyle = `rgba(76, 175, 80, ${pulse})`;
+            ctx.shadowColor = '#4caf50';
+            ctx.shadowBlur = 15;
+            
+            ctx.beginPath();
+            ctx.arc(
+                food.x * GRID_SIZE + GRID_SIZE/2,
+                food.y * GRID_SIZE + GRID_SIZE/2,
+                GRID_SIZE/2,
+                0,
+                Math.PI * 2
+            );
+            ctx.fill();
+            
+            mobileCtx.fillStyle = `rgba(76, 175, 80, ${pulse})`;
+            mobileCtx.shadowColor = '#4caf50';
+            mobileCtx.shadowBlur = 15;
+            
+            mobileCtx.beginPath();
+            mobileCtx.arc(
+                food.x * GRID_SIZE + GRID_SIZE/2,
+                food.y * GRID_SIZE + GRID_SIZE/2,
+                GRID_SIZE/2,
+                0,
+                Math.PI * 2
+            );
+            mobileCtx.fill();
+            
+            // Add quantum particles around food
+            if (Math.random() < 0.3) {
+                particles.push({
+                    x: food.x * GRID_SIZE + GRID_SIZE/2,
+                    y: food.y * GRID_SIZE + GRID_SIZE/2,
+                    size: Math.random() * 2 + 1,
+                    color: '#4caf50',
+                    life: 15
+                });
+            }
+            
+            ctx.shadowBlur = 0;
+            mobileCtx.shadowBlur = 0;
+        }
+
+        // Draw quantum superposition foods
+        function drawQuantumFoods() {
+            for (const qFood of quantumFoods) {
+                // Flickering effect for quantum foods
+                const flicker = Math.random() > 0.1 ? qFood.alpha : 0.3;
+                
+                ctx.fillStyle = `rgba(186, 85, 211, ${flicker})`;
+                ctx.shadowColor = 'rgba(186, 85, 211, 0.7)';
+                ctx.shadowBlur = 10;
+                
+                ctx.beginPath();
+                ctx.arc(
+                    qFood.x * GRID_SIZE + GRID_SIZE/2,
+                    qFood.y * GRID_SIZE + GRID_SIZE/2,
+                    GRID_SIZE/2,
+                    0,
+                    Math.PI * 2
+                );
+                ctx.fill();
+                
+                mobileCtx.fillStyle = `rgba(186, 85, 211, ${flicker})`;
+                mobileCtx.shadowColor = 'rgba(186, 85, 211, 0.7)';
+                mobileCtx.shadowBlur = 10;
+                
+                mobileCtx.beginPath();
+                mobileCtx.arc(
+                    qFood.x * GRID_SIZE + GRID_SIZE/2,
+                    qFood.y * GRID_SIZE + GRID_SIZE/2,
+                    GRID_SIZE/2,
+                    0,
+                    Math.PI * 2
+                );
+                mobileCtx.fill();
+                
+                // Add quantum particles
+                if (Math.random() < 0.2) {
+                    particles.push({
+                        x: qFood.x * GRID_SIZE + GRID_SIZE/2,
+                        y: qFood.y * GRID_SIZE + GRID_SIZE/2,
+                        size: Math.random() * 2 + 1,
+                        color: '#ba55d3',
+                        life: 10
+                    });
+                }
+            }
+            
+            ctx.shadowBlur = 0;
+            mobileCtx.shadowBlur = 0;
+        }
+
+        // Draw special entangled food
+        function drawSpecialFood() {
+            if (!specialFood) return;
+            
+            // Pulsing with different color
+            const pulse = Math.sin(Date.now() / 150) * 0.3 + 0.7;
+            
+            ctx.fillStyle = `rgba(255, 193, 7, ${pulse})`;
+            ctx.shadowColor = 'rgba(255, 193, 7, 0.8)';
+            ctx.shadowBlur = 20;
+            
+            // Draw as a diamond shape
+            ctx.beginPath();
+            const centerX = specialFood.x * GRID_SIZE + GRID_SIZE/2;
+            const centerY = specialFood.y * GRID_SIZE + GRID_SIZE/2;
+            const radius = GRID_SIZE/2;
+            
+            ctx.moveTo(centerX, centerY - radius);
+            ctx.lineTo(centerX + radius, centerY);
+            ctx.lineTo(centerX, centerY + radius);
+            ctx.lineTo(centerX - radius, centerY);
+            ctx.closePath();
+            ctx.fill();
+            
+            mobileCtx.fillStyle = `rgba(255, 193, 7, ${pulse})`;
+            mobileCtx.shadowColor = 'rgba(255, 193, 7, 0.8)';
+            mobileCtx.shadowBlur = 20;
+            
+            mobileCtx.beginPath();
+            mobileCtx.moveTo(centerX, centerY - radius);
+            mobileCtx.lineTo(centerX + radius, centerY);
+            mobileCtx.lineTo(centerX, centerY + radius);
+            mobileCtx.lineTo(centerX - radius, centerY);
+            mobileCtx.closePath();
+            mobileCtx.fill();
+            
+            // Add more particles for special food
+            if (Math.random() < 0.5) {
+                particles.push({
+                    x: centerX,
+                    y: centerY,
+                    size: Math.random() * 3 + 1,
+                    color: '#ffc107',
+                    life: 20
+                });
+            }
+            
+            ctx.shadowBlur = 0;
+            mobileCtx.shadowBlur = 0;
+            
+            // Draw timer bar
+            const timerWidth = (specialFood.timer / specialFoodTimer) * GRID_SIZE;
+            ctx.fillStyle = '#ffc107';
+            ctx.fillRect(
+                specialFood.x * GRID_SIZE,
+                specialFood.y * GRID_SIZE - 5,
+                timerWidth,
+                3
+            );
+            mobileCtx.fillStyle = '#ffc107';
+            mobileCtx.fillRect(
+                specialFood.x * GRID_SIZE,
+                specialFood.y * GRID_SIZE - 5,
+                timerWidth,
+                3
+            );
+        }
+
+        // Draw quantum particles
+        function drawParticles() {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = p.life / 20;
+                
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                mobileCtx.fillStyle = p.color;
+                mobileCtx.globalAlpha = p.life / 20;
+                
+                mobileCtx.beginPath();
+                mobileCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                mobileCtx.fill();
+                
+                p.life--;
+                if (p.life <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+            
+            ctx.globalAlpha = 1;
+            mobileCtx.globalAlpha = 1;
+        }
+
+        // Update game state - FIXED QUANTUM TUNNELING ISSUE
+        function update() {
+            if (gamePaused || !gameRunning || gameOver) return;
+
+            // Update direction
+            direction = nextDirection;
+
+            // Calculate new head position
+            const head = {x: snake[0].x, y: snake[0].y};
+            
+            switch(direction) {
+                case 'up': head.y--; break;
+                case 'down': head.y++; break;
+                case 'left': head.x--; break;
+                case 'right': head.x++; break;
+            }
+
+            // Quantum tunneling - pass through walls if quantum level is high enough
+            let tunneled = false;
+            if (quantumLevel >= 50) {
+                if (head.x < 0) {
+                    head.x = gridWidth - 1;
+                    tunneled = true;
+                } else if (head.x >= gridWidth) {
+                    head.x = 0;
+                    tunneled = true;
+                }
+                if (head.y < 0) {
+                    head.y = gridHeight - 1;
+                    tunneled = true;
+                } else if (head.y >= gridHeight) {
+                    head.y = 0;
+                    tunneled = true;
+                }
+            } else {
+                // Check for wall collision (if not tunneling)
+                if (head.x < 0 || head.x >= gridWidth || head.y < 0 || head.y >= gridHeight) {
+                    gameOver = true;
+                    showGameOver();
+                    return;
+                }
+            }
+
+            // Check for self collision
+            for (let i = 0; i < snake.length; i++) {
+                if (head.x === snake[i].x && head.y === snake[i].y) {
+                    gameOver = true;
+                    showGameOver();
+                    return;
+                }
+            }
+
+            // Add new head
+            snake.unshift(head);
+
+            // Check for food collision - FIXED: Check food after position wrap-around
+            let ateFood = false;
+
+            // Check regular food
+            if (head.x === food.x && head.y === food.y) {
+                score += 10;
+                quantumLevel += 5;
+                ateFood = true;
+                generateFood();
+            }
+
+            // Check quantum foods
+            for (let i = quantumFoods.length - 1; i >= 0; i--) {
+                const qFood = quantumFoods[i];
+                if (head.x === qFood.x && head.y === qFood.y) {
+                    score += 15;
+                    quantumLevel += 8;
+                    quantumFoods.splice(i, 1);
+                    ateFood = true;
+                    break;
+                }
+            }
+
+            // Check special food
+            if (specialFood && head.x === specialFood.x && head.y === specialFood.y) {
+                score += 30;
+                quantumLevel += 15;
+                specialFood = null;
+                ateFood = true;
+            }
+
+            // If no food was eaten, remove tail
+            if (!ateFood) {
+                snake.pop();
+            } else {
+                snakeLength = snake.length;
+                
+                // Update level (every 5 points)
+                const newLevel = Math.floor(score / 50) + 1;
+                if (newLevel > level) {
+                    level = newLevel;
+                    dropInterval = Math.max(50, 200 - (level - 1) * 20);
+                }
+            }
+
+            // Update special food timer
+            if (specialFood) {
+                specialFood.timer--;
+                if (specialFood.timer <= 0) {
+                    specialFood = null;
+                }
+            }
+
+            // Update stats
+            updateScoreDisplays();
+        }
+
+        // Game loop
+        function gameLoop(time = 0) {
+            if (isPaused || gameOver) return;
+
+            const deltaTime = time - lastTime;
+            lastTime = time;
+
+            dropCounter += deltaTime;
+            if (dropCounter > dropInterval) {
+                update();
+                dropCounter = 0;
+            }
+
+            draw();
+            gameLoopId = requestAnimationFrame(gameLoop);
+        }
+
+        // Start the game
+        function startGame() {
+            if (gameOver) {
+                init();
+            }
+
+            gameRunning = true;
+            isPaused = false;
+            document.getElementById('pauseButton').textContent = 'Pause';
+            dropCounter = 0;
+            lastTime = 0;
+
+            // Cancel any existing game loop
+            if (gameLoopId) {
+                cancelAnimationFrame(gameLoopId);
+            }
+
+            gameLoop();
+        }
+
+        // Pause the game
+        function pauseGame() {
+            isPaused = !isPaused;
+            document.getElementById('pauseButton').textContent = isPaused ? 'Resume' : 'Pause';
+
+            if (!isPaused) {
+                lastTime = 0;
+                gameLoop();
+            }
+        }
+
+        // Show game over modal
+        function showGameOver() {
+            document.getElementById('final-score').textContent = score;
+            document.getElementById('final-level').textContent = level;
+            document.getElementById('final-length').textContent = snakeLength;
+            document.getElementById('game-over-modal').style.display = 'flex';
+        }
+
+        // Initialize the game
+        function setup() {
+            // Apply seasonal theme
+            const currentSeason = getCurrentSeason();
+            applySeasonalTheme(currentSeason);
+
+            // Initialize the game
+            init();
+
+            // Event listeners for desktop controls - ADDED WSAP SUPPORT
+            document.addEventListener('keydown', (e) => {
+                if (isPaused || gameOver) return;
+
+                switch (e.key) {
+                    case 'ArrowLeft':
+                    case 'a':
+                    case 'A':
+                        if (direction !== 'right') nextDirection = 'left';
+                        break;
+                    case 'ArrowRight':
+                    case 'd':
+                    case 'D':
+                        if (direction !== 'left') nextDirection = 'right';
+                        break;
+                    case 'ArrowDown':
+                    case 's':
+                    case 'S':
+                        if (direction !== 'up') nextDirection = 'down';
+                        break;
+                    case 'ArrowUp':
+                    case 'w':
+                    case 'W':
+                        if (direction !== 'down') nextDirection = 'up';
+                        break;
+                    case ' ':
+                        pauseGame();
+                        break;
+                }
+            });
+
+            // Event listeners for buttons
+            document.getElementById('startButton').addEventListener('click', startGame);
+            document.getElementById('pauseButton').addEventListener('click', pauseGame);
+            document.getElementById('play-again-btn').addEventListener('click', init);
+
+            // Event listeners for mobile controls
+            document.getElementById('up-btn').addEventListener('click', () => {
+                if (direction !== 'down') nextDirection = 'up';
+            });
+            document.getElementById('left-btn').addEventListener('click', () => {
+                if (direction !== 'right') nextDirection = 'left';
+            });
+            document.getElementById('down-btn').addEventListener('click', () => {
+                if (direction !== 'up') nextDirection = 'down';
+            });
+            document.getElementById('right-btn').addEventListener('click', () => {
+                if (direction !== 'left') nextDirection = 'right';
+            });
+
+            // Add touch events for mobile controls
+            document.getElementById('up-btn').addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                if (direction !== 'down') nextDirection = 'up';
+            });
+            document.getElementById('left-btn').addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                if (direction !== 'right') nextDirection = 'left';
+            });
+            document.getElementById('down-btn').addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                if (direction !== 'up') nextDirection = 'down';
+            });
+            document.getElementById('right-btn').addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                if (direction !== 'left') nextDirection = 'right';
+            });
+
+            // Prevent scrolling on mobile when using controls
+            document.querySelectorAll('.mobile-btn').forEach(btn => {
+                btn.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                });
+            });
+
+            // Handle window resize
+            window.addEventListener('resize', init);
+        }
+
+        // Initialize the game when the page loads
+        window.addEventListener('load', setup);
+    </script>
+</body>
+</html>
