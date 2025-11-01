@@ -966,25 +966,25 @@
         </a>
       </div>
 
-      <!-- Ryblast -->
+      <!-- Quantum Snake -->
       <div class="game-card" style="animation-delay: 0.2s">
         <div class="game-header">
           <div class="game-icon">
-            <i class="fas fa-hand-pointer"></i>
+            <i class="fas fa-atom"></i>
           </div>
           <div class="game-info">
-            <h3>Ryblast</h3>
-            <p>Drag and drop blocks to create matches and clear the board</p>
+            <h3>Quantum Snake</h3>
+            <p>When the Nokia snake meets Quantum Mechanics</p>
           </div>
         </div>
         <div class="game-stats">
           <div class="stat">
-            <div class="stat-value" id="ryblastRating">4.7</div>
-            <div class="rating-stars" id="ryblastStars">★★★★★</div>
+            <div class="stat-value" id="quantumSnakeRating">4.6</div>
+            <div class="rating-stars" id="quantumSnakeStars">★★★★★</div>
             <div class="stat-label">Rating</div>
           </div>
           <div class="stat">
-            <div class="stat-value" id="ryblastPlays">0</div>
+            <div class="stat-value" id="quantumSnakePlays">0</div>
             <div class="stat-label">Plays</div>
           </div>
           <div class="stat">
@@ -992,7 +992,7 @@
             <div class="stat-label">Genre</div>
           </div>
         </div>
-        <a href="Ryblast.html" class="play-btn" id="ryblastPlayBtn">
+        <a href="quantum-snake.html" class="play-btn" id="quantumSnakePlayBtn">
           <i class="fas fa-play"></i> Play Now
         </a>
       </div>
@@ -1127,10 +1127,10 @@
         // Create some simulated players
         const simulatedPlayers = [
           { playerId: 'sim1', playerName: 'QuantumGamer42', lastSeen: Date.now() - 10000, currentGame: 'rytris' },
-          { playerId: 'sim2', playerName: 'NeonRacer99', lastSeen: Date.now() - 30000, currentGame: 'ryblast' },
+          { playerId: 'sim2', playerName: 'NeonRacer99', lastSeen: Date.now() - 30000, currentGame: 'quantumSnake' },
           { playerId: 'sim3', playerName: 'CyberStriker', lastSeen: Date.now() - 15000, currentGame: 'rytris' },
           { playerId: 'sim4', playerName: 'DigitalMaster', lastSeen: Date.now() - 45000, currentGame: null },
-          { playerId: 'sim5', playerName: 'VirtualHero', lastSeen: Date.now() - 20000, currentGame: 'ryblast' }
+          { playerId: 'sim5', playerName: 'VirtualHero', lastSeen: Date.now() - 20000, currentGame: 'quantumSnake' }
         ];
 
         // Add current player
@@ -1186,7 +1186,7 @@
       getGameName(gameId) {
         const games = {
           rytris: 'Rytris',
-          ryblast: 'Ryblast'
+          quantumSnake: 'Quantum Snake'
         };
         return games[gameId] || gameId;
       }
@@ -1233,7 +1233,7 @@
       constructor() {
         this.games = {
           rytris: this.loadGameData('rytris'),
-          ryblast: this.loadGameData('ryblast')
+          quantumSnake: this.loadGameData('quantumSnake')
         };
       }
 
@@ -1254,7 +1254,7 @@
         if (gameId === 'rytris') {
           defaultData.plays = 156;
           defaultData.ratings = [5, 5, 4, 5, 5, 4, 5, 5, 5, 4, 5, 5];
-        } else if (gameId === 'ryblast') {
+        } else if (gameId === 'quantumSnake') {
           defaultData.plays = 89;
           defaultData.ratings = [5, 4, 5, 5, 4, 5, 5, 4, 5, 5];
         }
@@ -1295,7 +1295,7 @@
 
     function updateStats() {
       // Update each game's stats
-      ['rytris', 'ryblast'].forEach(gameId => {
+      ['rytris', 'quantumSnake'].forEach(gameId => {
         const plays = statsManager.games[gameId].plays;
         const rating = statsManager.getAverageRating(gameId);
 
@@ -1387,8 +1387,8 @@
         handleGamePlay('rytris');
       });
 
-      document.getElementById('ryblastPlayBtn').addEventListener('click', () => {
-        handleGamePlay('ryblast');
+      document.getElementById('quantumSnakePlayBtn').addEventListener('click', () => {
+        handleGamePlay('quantumSnake');
       });
 
       // Start multiplayer tracking
