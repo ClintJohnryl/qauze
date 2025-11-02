@@ -913,12 +913,12 @@
     <div class="stats-grid">
       <div class="stat-card">
         <i class="fas fa-gamepad"></i>
-        <div class="stat-number">2</div>
+        <div class="stat-number">3</div>
         <div class="stat-label">Total Games</div>
       </div>
       <div class="stat-card">
         <i class="fas fa-play-circle"></i>
-        <div class="stat-number">2</div>
+        <div class="stat-number">3</div>
         <div class="stat-label">Available Now</div>
       </div>
       <div class="stat-card">
@@ -993,6 +993,37 @@
           </div>
         </div>
         <a href="quantum_snake.html" class="play-btn" id="quantumSnakePlayBtn">
+          <i class="fas fa-play"></i> Play Now
+        </a>
+      </div>
+
+      <!-- Maze Game -->
+      <div class="game-card" style="animation-delay: 0.3s">
+        <div class="game-header">
+          <div class="game-icon">
+            <i class="fas fa-project-diagram"></i>
+          </div>
+          <div class="game-info">
+            <h3>Maze Game</h3>
+            <p>Navigate through challenging mazes and find your way to the exit</p>
+          </div>
+        </div>
+        <div class="game-stats">
+          <div class="stat">
+            <div class="stat-value" id="mazeGameRating">4.4</div>
+            <div class="rating-stars" id="mazeGameStars">★★★★☆</div>
+            <div class="stat-label">Rating</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="mazeGamePlays">0</div>
+            <div class="stat-label">Plays</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">Puzzle</div>
+            <div class="stat-label">Genre</div>
+          </div>
+        </div>
+        <a href="maze_game.html" class="play-btn" id="mazeGamePlayBtn">
           <i class="fas fa-play"></i> Play Now
         </a>
       </div>
@@ -1129,8 +1160,9 @@
           { playerId: 'sim1', playerName: 'QuantumGamer42', lastSeen: Date.now() - 10000, currentGame: 'rytris' },
           { playerId: 'sim2', playerName: 'NeonRacer99', lastSeen: Date.now() - 30000, currentGame: 'quantumSnake' },
           { playerId: 'sim3', playerName: 'CyberStriker', lastSeen: Date.now() - 15000, currentGame: 'rytris' },
-          { playerId: 'sim4', playerName: 'DigitalMaster', lastSeen: Date.now() - 45000, currentGame: null },
-          { playerId: 'sim5', playerName: 'VirtualHero', lastSeen: Date.now() - 20000, currentGame: 'quantumSnake' }
+          { playerId: 'sim4', playerName: 'DigitalMaster', lastSeen: Date.now() - 45000, currentGame: 'mazeGame' },
+          { playerId: 'sim5', playerName: 'VirtualHero', lastSeen: Date.now() - 20000, currentGame: 'quantumSnake' },
+          { playerId: 'sim6', playerName: 'MazeExplorer', lastSeen: Date.now() - 25000, currentGame: 'mazeGame' }
         ];
 
         // Add current player
@@ -1186,7 +1218,8 @@
       getGameName(gameId) {
         const games = {
           rytris: 'Rytris',
-          quantumSnake: 'Quantum Snake'
+          quantumSnake: 'Quantum Snake',
+          mazeGame: 'Maze Game'
         };
         return games[gameId] || gameId;
       }
@@ -1233,7 +1266,8 @@
       constructor() {
         this.games = {
           rytris: this.loadGameData('rytris'),
-          quantumSnake: this.loadGameData('quantumSnake')
+          quantumSnake: this.loadGameData('quantumSnake'),
+          mazeGame: this.loadGameData('mazeGame')
         };
       }
 
@@ -1257,6 +1291,9 @@
         } else if (gameId === 'quantumSnake') {
           defaultData.plays = 89;
           defaultData.ratings = [5, 4, 5, 5, 4, 5, 5, 4, 5, 5];
+        } else if (gameId === 'mazeGame') {
+          defaultData.plays = 67;
+          defaultData.ratings = [5, 4, 4, 5, 4, 5, 4, 4, 5, 4];
         }
 
         return defaultData;
@@ -1295,7 +1332,7 @@
 
     function updateStats() {
       // Update each game's stats
-      ['rytris', 'quantumSnake'].forEach(gameId => {
+      ['rytris', 'quantumSnake', 'mazeGame'].forEach(gameId => {
         const plays = statsManager.games[gameId].plays;
         const rating = statsManager.getAverageRating(gameId);
 
@@ -1389,6 +1426,10 @@
 
       document.getElementById('quantumSnakePlayBtn').addEventListener('click', () => {
         handleGamePlay('quantumSnake');
+      });
+
+      document.getElementById('mazeGamePlayBtn').addEventListener('click', () => {
+        handleGamePlay('mazeGame');
       });
 
       // Start multiplayer tracking
