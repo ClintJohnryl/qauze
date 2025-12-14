@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Explore - Qauzium</title>
   <link rel="icon" href="logos/logo.png" type="image/png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -13,14 +13,31 @@
       --secondary: #00eaff;
       --accent: #ff4757;
       --dark-bg: #121212;
+      --light-bg: #f5f5f5;
       --card-bg: rgba(255, 255, 255, 0.05);
+      --card-bg-light: rgba(255, 255, 255, 0.9);
       --text-primary: #fff;
+      --text-primary-light: #333;
       --text-secondary: #bbb;
-      --sidebar-width: 220px;
-      --main-margin: 240px;
-      --header-height: 70px;
+      --text-secondary-light: #666;
+      --sidebar-width: 260px;
+      --main-margin: 280px;
+      --header-height: 60px;
+      --bottom-nav-height: 65px;
+      --safe-area-top: env(safe-area-inset-top, 0px);
+      --safe-area-bottom: env(safe-area-inset-bottom, 0px);
       --season-name: "Default";
       --animations-enabled: 1;
+      --event-active: "none";
+    }
+
+    /* Light Theme Variables */
+    body.light-theme {
+      --dark-bg: var(--light-bg);
+      --card-bg: var(--card-bg-light);
+      --text-primary: var(--text-primary-light);
+      --text-secondary: var(--text-secondary-light);
+      --season-overlay-opacity: 0.08;
     }
 
     /* Seasonal Themes */
@@ -30,6 +47,7 @@
       --accent: #ff8787;
       --dark-bg: #0f1a2a;
       --season-name: "Winter";
+      --season-overlay-opacity: 0.15;
     }
 
     .season-spring {
@@ -38,6 +56,7 @@
       --accent: #ffa94d;
       --dark-bg: #1a2f1a;
       --season-name: "Spring";
+      --season-overlay-opacity: 0.15;
     }
 
     .season-summer {
@@ -46,6 +65,7 @@
       --accent: #ff6b6b;
       --dark-bg: #2a1f0f;
       --season-name: "Summer";
+      --season-overlay-opacity: 0.15;
     }
 
     .season-autumn {
@@ -54,9 +74,66 @@
       --accent: #cc5de8;
       --dark-bg: #2a1a0f;
       --season-name: "Autumn";
+      --season-overlay-opacity: 0.15;
     }
 
-    /* Animation Control - COMPLETE DISABLE */
+    /* Special Event Themes */
+    .event-christmas {
+      --primary: #dc3545;
+      --secondary: #28a745;
+      --accent: #ffd700;
+      --season-name: "Christmas";
+      --event-active: "Christmas";
+      --season-overlay-opacity: 0.2;
+    }
+
+    .event-newyear {
+      --primary: #9c27b0;
+      --secondary: #2196f3;
+      --accent: #ffeb3b;
+      --season-name: "New Year";
+      --event-active: "New Year";
+      --season-overlay-opacity: 0.2;
+    }
+
+    .event-halloween {
+      --primary: #ff6f00;
+      --secondary: #ff9800;
+      --accent: #8e24aa;
+      --season-name: "Halloween";
+      --event-active: "Halloween";
+      --season-overlay-opacity: 0.2;
+    }
+
+    .event-valentine {
+      --primary: #e91e63;
+      --secondary: #f8bbd9;
+      --accent: #ff4081;
+      --season-name: "Valentine's";
+      --event-active: "Valentine's";
+      --season-overlay-opacity: 0.2;
+    }
+
+    .event-easter {
+      --primary: #ffeb3b;
+      --secondary: #e1bee7;
+      --accent: #4caf50;
+      --season-name: "Easter";
+      --event-active: "Easter";
+      --season-overlay-opacity: 0.2;
+    }
+
+    /* Mobile-first responsive design */
+    @media (max-width: 768px) {
+      :root {
+        --sidebar-width: 280px;
+        --main-margin: 0;
+        --header-height: 60px;
+        --bottom-nav-height: 70px;
+      }
+    }
+
+    /* Animation Control */
     .no-animations * {
       animation: none !important;
       transition: none !important;
@@ -117,18 +194,18 @@
 
     /* Custom Scrollbar */
     ::-webkit-scrollbar {
-      width: 12px;
+      width: 8px;
     }
 
     ::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.2);
+      background: rgba(0, 0, 0, 0.1);
       border-radius: 6px;
     }
 
     ::-webkit-scrollbar-thumb {
       background: linear-gradient(to bottom, var(--primary), var(--secondary));
       border-radius: 6px;
-      border: 2px solid rgba(0, 0, 0, 0.2);
+      border: 2px solid rgba(0, 0, 0, 0.1);
     }
 
     ::-webkit-scrollbar-thumb:hover {
@@ -138,27 +215,35 @@
     /* Firefox Scrollbar */
     * {
       scrollbar-width: thin;
-      scrollbar-color: var(--primary) rgba(0, 0, 0, 0.2);
+      scrollbar-color: var(--primary) rgba(0, 0, 0, 0.1);
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
     }
 
     body {
       margin: 0;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
       background: radial-gradient(circle at top, #0f2027, var(--dark-bg));
       color: var(--text-primary);
       display: flex;
       min-height: 100vh;
       overflow-x: hidden;
       transition: all 0.8s ease;
+      padding-top: var(--safe-area-top);
+      padding-bottom: var(--safe-area-bottom);
     }
 
-    /* Seasonal Background Overlays */
+    body.light-theme {
+      background: radial-gradient(circle at top, #e3f2fd, var(--dark-bg));
+    }
+
+    /* Seasonal & Event Background Overlays */
     .season-overlay {
       position: fixed;
       top: 0;
@@ -167,7 +252,7 @@
       height: 100%;
       pointer-events: none;
       z-index: -1;
-      opacity: 0.15;
+      opacity: var(--season-overlay-opacity, 0.15);
       transition: opacity 0.8s ease;
     }
 
@@ -199,7 +284,29 @@
         linear-gradient(45deg, rgba(200, 130, 60, 0.1) 0%, transparent 50%);
     }
 
-    /* Background grid - will be disabled when animations are off */
+    /* Christmas Overlay */
+    .christmas-overlay {
+      background:
+        radial-gradient(circle at 20% 80%, rgba(255, 220, 220, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(220, 255, 220, 0.2) 0%, transparent 50%),
+        repeating-linear-gradient(45deg, 
+          rgba(220, 53, 69, 0.1) 0px, 
+          rgba(220, 53, 69, 0.1) 20px, 
+          rgba(40, 167, 69, 0.1) 20px, 
+          rgba(40, 167, 69, 0.1) 40px);
+    }
+
+    .newyear-overlay {
+      background:
+        radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.4) 0%, transparent 70%),
+        repeating-linear-gradient(45deg,
+          rgba(156, 39, 176, 0.2) 0px,
+          rgba(156, 39, 176, 0.2) 10px,
+          rgba(33, 150, 243, 0.2) 10px,
+          rgba(33, 150, 243, 0.2) 20px);
+    }
+
+    /* Background grid */
     body::before {
       content: "";
       position: fixed;
@@ -214,6 +321,11 @@
       z-index: -2;
     }
 
+    body.light-theme::before {
+      background-image: linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+    }
+
     @keyframes moveGrid {
       from {
         background-position: 0 0, 0 0;
@@ -224,7 +336,7 @@
       }
     }
 
-    /* Particle System - will be hidden when animations are off */
+    /* Particle System */
     #particles-js {
       position: fixed;
       width: 100%;
@@ -235,7 +347,7 @@
       pointer-events: none;
     }
 
-    /* Header for mobile */
+    /* Enhanced Header for Mobile */
     .header {
       display: none;
       position: fixed;
@@ -243,142 +355,230 @@
       left: 0;
       right: 0;
       height: var(--header-height);
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(12px);
-      padding: 0 20px;
-      z-index: 10;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 0 16px;
+      z-index: 1000;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       align-items: center;
       justify-content: space-between;
+      padding-top: var(--safe-area-top);
+      transition: all 0.3s ease;
+    }
+
+    body.light-theme .header {
+      background: rgba(255, 255, 255, 0.9);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
     }
 
     .header h1 {
-      font-size: 1.2em;
+      font-size: 1.3rem;
+      font-weight: 700;
       background: linear-gradient(90deg, var(--primary), var(--secondary));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
     }
 
-    /* Enhanced Sidebar */
+    .header-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .header-icon-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 12px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-primary);
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    body.light-theme .header-icon-btn {
+      background: rgba(0, 0, 0, 0.1);
+      color: var(--text-primary);
+    }
+
+    .header-icon-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    body.light-theme .header-icon-btn:hover {
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    /* Enhanced Sidebar for Mobile */
     .sidebar {
       width: var(--sidebar-width);
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(12px);
-      padding: 20px;
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      padding: 20px 0;
       display: flex;
       flex-direction: column;
       position: fixed;
       top: 0;
       bottom: 0;
       left: 0;
-      border-right: 1px solid rgba(255, 255, 255, 0.1);
-      z-index: 100;
-      transition: transform 0.3s ease;
+      z-index: 1001;
+      transition: transform 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
       overflow-y: auto;
+      overflow-x: hidden;
+      will-change: transform;
+      padding-top: var(--safe-area-top);
+      border-right: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+    }
+
+    body.light-theme .sidebar {
+      background: rgba(255, 255, 255, 0.95);
+      border-right: 1px solid rgba(0, 0, 0, 0.1);
     }
 
     .sidebar-header {
       display: flex;
       align-items: center;
-      margin-bottom: 25px;
-      padding-bottom: 15px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 30px;
+      padding: 0 20px 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    body.light-theme .sidebar-header {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     }
 
     .sidebar-logo {
-      width: 40px;
-      height: 40px;
-      margin-right: 10px;
-      border-radius: 8px;
+      width: 44px;
+      height: 44px;
+      margin-right: 12px;
+      border-radius: 12px;
       background: linear-gradient(135deg, var(--primary), var(--secondary));
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
       font-weight: bold;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
     }
 
     .sidebar h2 {
-      font-size: 1.4em;
+      font-size: 1.4rem;
+      font-weight: 700;
       background: linear-gradient(90deg, var(--primary), var(--secondary));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 0;
     }
 
     .sidebar-section {
-      margin-bottom: 20px;
+      margin-bottom: 24px;
     }
 
     .sidebar-section-title {
-      font-size: 0.8em;
+      font-size: 0.75rem;
       text-transform: uppercase;
       color: var(--text-secondary);
-      margin-bottom: 10px;
-      padding-left: 12px;
-      letter-spacing: 1px;
+      margin-bottom: 12px;
+      padding: 0 20px;
+      letter-spacing: 1.5px;
+      font-weight: 600;
+      opacity: 0.7;
     }
 
     .sidebar a {
       display: flex;
       align-items: center;
-      padding: 10px 12px;
-      margin-bottom: 8px;
-      border-radius: 8px;
+      padding: 14px 20px;
       text-decoration: none;
       color: var(--text-secondary);
       transition: all 0.3s ease;
-      font-size: 0.95em;
+      font-size: 0.95rem;
+      font-weight: 500;
+      position: relative;
+      border-left: 4px solid transparent;
     }
 
     .sidebar a i {
-      margin-right: 10px;
+      margin-right: 14px;
       color: var(--secondary);
-      width: 20px;
+      width: 22px;
       text-align: center;
+      font-size: 1.1rem;
     }
 
     .sidebar a:hover,
     .sidebar a.active {
       background: rgba(0, 123, 255, 0.15);
       color: var(--text-primary);
+      border-left: 4px solid var(--secondary);
     }
 
     .sidebar a .badge {
       margin-left: auto;
       background: var(--accent);
       color: white;
-      font-size: 0.7em;
-      padding: 2px 6px;
-      border-radius: 10px;
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(255, 71, 87, 0.3);
     }
 
     .sidebar-footer {
       margin-top: auto;
-      padding-top: 15px;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 20px 20px 30px;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    body.light-theme .sidebar-footer {
+      background: rgba(0, 0, 0, 0.05);
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
     }
 
     .user-profile {
       display: flex;
       align-items: center;
-      margin-bottom: 15px;
-      padding: 8px;
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.05);
+      margin-bottom: 20px;
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+    }
+
+    body.light-theme .user-profile {
+      background: rgba(0, 0, 0, 0.05);
     }
 
     .user-avatar {
-      width: 36px;
-      height: 36px;
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
       background: linear-gradient(135deg, var(--primary), var(--secondary));
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-right: 10px;
+      margin-right: 12px;
       color: white;
       font-weight: bold;
+      font-size: 1rem;
+      box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
     }
 
     .user-info {
@@ -386,157 +586,308 @@
     }
 
     .user-name {
-      font-size: 0.9em;
-      font-weight: bold;
+      font-size: 0.95rem;
+      font-weight: 600;
     }
 
     .user-status {
-      font-size: 0.75em;
+      font-size: 0.8rem;
       color: var(--text-secondary);
+      display: flex;
+      align-items: center;
     }
 
-    .user-status.online {
-      color: #2ed573;
+    .user-status::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      margin-right: 6px;
+      background: #2ed573;
+    }
+
+    .user-status.online::before {
+      background: #2ed573;
+    }
+
+    .user-status.offline::before {
+      background: #ff4757;
+    }
+
+    /* Bottom Navigation for Mobile */
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--bottom-nav-height);
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 1000;
+      padding-bottom: var(--safe-area-bottom);
+    }
+
+    body.light-theme .bottom-nav {
+      background: rgba(255, 255, 255, 0.9);
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .bottom-nav-items {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      height: 100%;
+      padding: 0 10px;
+    }
+
+    .bottom-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      text-decoration: none;
+      color: var(--text-secondary);
+      padding: 8px 4px;
+      transition: all 0.3s ease;
+      border-radius: 12px;
+      margin: 0 4px;
+    }
+
+    .bottom-nav-item i {
+      font-size: 1.2rem;
+      margin-bottom: 4px;
+    }
+
+    .bottom-nav-item span {
+      font-size: 0.7rem;
+      font-weight: 500;
+    }
+
+    .bottom-nav-item.active {
+      color: var(--secondary);
+      background: rgba(0, 123, 255, 0.15);
+      transform: translateY(-4px);
+    }
+
+    /* Event Badge */
+    .event-badge {
+      position: fixed;
+      top: calc(var(--header-height) + 10px);
+      left: 16px;
+      background: linear-gradient(135deg, var(--accent), var(--primary));
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      z-index: 5;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      }
+      50% {
+        transform: scale(1.05);
+        box-shadow: 0 4px 20px var(--accent);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      }
     }
 
     /* Main content */
     .main {
       margin-left: var(--main-margin);
-      padding: 40px 20px;
+      padding: 20px 16px;
       flex: 1;
-      transition: margin-left 0.3s ease, padding 0.3s ease;
+      transition: margin-left 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
       overflow-y: auto;
       max-height: 100vh;
+      padding-top: calc(var(--header-height) + 20px);
+      padding-bottom: calc(var(--bottom-nav-height) + 20px);
     }
 
     .welcome {
       text-align: center;
-      margin-bottom: 40px;
+      margin-bottom: 32px;
       opacity: 0;
       animation: fadeIn 0.8s ease forwards;
+      padding: 0 10px;
     }
 
     .welcome h1 {
-      font-size: clamp(1.8rem, 4vw, 2.8rem);
-      margin-bottom: 10px;
+      font-size: 1.8rem;
+      margin-bottom: 12px;
       animation: glow 2s ease-in-out infinite alternate;
       background: linear-gradient(90deg, var(--primary), var(--secondary));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      line-height: 1.2;
+      font-weight: 700;
     }
 
     .welcome p {
-      font-size: clamp(0.9rem, 2vw, 1.1rem);
+      font-size: 0.95rem;
       color: var(--text-secondary);
-      max-width: 600px;
+      max-width: 500px;
       margin: auto;
+      line-height: 1.5;
     }
 
-    /* Season indicator */
+    /* Season indicator for mobile */
     .season-indicator {
-      position: absolute;
-      top: 20px;
-      right: 20px;
+      position: fixed;
+      top: calc(var(--header-height) + 10px);
+      right: 16px;
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 6px 12px;
+      gap: 6px;
+      padding: 6px 10px;
       border-radius: 20px;
-      background: rgba(0, 0, 0, 0.3);
+      background: rgba(0, 0, 0, 0.7);
       backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      font-size: 0.85rem;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      font-size: 0.75rem;
       color: var(--text-secondary);
+      z-index: 5;
+    }
+
+    body.light-theme .season-indicator {
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(0, 0, 0, 0.15);
     }
 
     .season-indicator i {
       color: var(--secondary);
     }
 
-    /* Search and filter */
+    /* Enhanced Search and filter for mobile */
     .search-container {
       max-width: 600px;
-      margin: 0 auto 30px;
+      margin: 0 auto 24px;
       position: relative;
       opacity: 0;
       animation: fadeIn 0.8s ease 0.2s forwards;
+      padding: 0 10px;
     }
 
     .search-box {
       width: 100%;
-      padding: 12px 20px;
-      border-radius: 50px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      background: rgba(0, 0, 0, 0.3);
+      padding: 16px 52px 16px 20px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(0, 0, 0, 0.6);
       color: var(--text-primary);
       font-size: 1rem;
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
       transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    body.light-theme .search-box {
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      color: var(--text-primary);
     }
 
     .search-box:focus {
       outline: none;
       border-color: var(--secondary);
-      box-shadow: 0 0 15px rgba(0, 234, 255, 0.3);
+      box-shadow: 0 0 0 3px rgba(0, 234, 255, 0.2);
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    body.light-theme .search-box:focus {
+      background: rgba(255, 255, 255, 0.95);
     }
 
     .search-icon {
       position: absolute;
-      right: 15px;
+      right: 20px;
       top: 50%;
       transform: translateY(-50%);
       color: var(--text-secondary);
+      font-size: 1.1rem;
     }
 
     .filter-container {
       display: flex;
       justify-content: center;
-      gap: 10px;
-      margin-bottom: 30px;
+      gap: 8px;
+      margin-bottom: 24px;
       flex-wrap: wrap;
       opacity: 0;
       animation: fadeIn 0.8s ease 0.4s forwards;
+      padding: 0 10px;
     }
 
     .filter-btn {
-      padding: 8px 16px;
-      border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      background: rgba(0, 0, 0, 0.3);
+      padding: 10px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(0, 0, 0, 0.6);
       color: var(--text-secondary);
       cursor: pointer;
       transition: all 0.3s ease;
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      font-size: 0.9rem;
+      font-weight: 500;
+      min-width: 70px;
+      text-align: center;
+    }
+
+    body.light-theme .filter-btn {
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      color: var(--text-secondary);
     }
 
     .filter-btn:hover,
     .filter-btn.active {
-      background: rgba(0, 123, 255, 0.15);
+      background: rgba(0, 123, 255, 0.25);
       color: var(--text-primary);
       border-color: var(--secondary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
     }
 
-    /* Explore grid */
+    /* Enhanced Explore grid for mobile */
     .explore-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 25px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
       width: 100%;
       max-width: 1100px;
       margin: auto;
+      padding: 0 10px;
     }
 
     .explore-card {
       position: relative;
       background: var(--card-bg);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
       text-align: center;
-      padding: clamp(20px, 5vw, 35px) 20px;
-      backdrop-filter: blur(15px);
-      transition: all 0.3s ease;
+      padding: 28px 20px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
       opacity: 0;
       transform: translateY(20px);
       animation: cardAppear 0.5s ease forwards;
@@ -544,6 +895,12 @@
       text-decoration: none;
       color: inherit;
       overflow: hidden;
+      will-change: transform;
+    }
+
+    body.light-theme .explore-card {
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     }
 
     /* Enhanced card hover effects */
@@ -558,19 +915,23 @@
       transition: left 0.7s ease;
     }
 
+    body.light-theme .explore-card::before {
+      background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.1), transparent);
+    }
+
     .explore-card:hover::before {
       left: 100%;
     }
 
     .explore-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 8px 25px var(--primary);
+      transform: translateY(-8px);
+      box-shadow: 0 16px 40px var(--primary);
       border-color: var(--secondary);
     }
 
     .explore-card i {
-      font-size: clamp(1.8em, 5vw, 2.5em);
-      margin-bottom: 15px;
+      font-size: 2.5rem;
+      margin-bottom: 18px;
       color: var(--secondary);
       transition: transform 0.3s ease;
       position: relative;
@@ -583,24 +944,27 @@
     }
 
     .explore-card h2 {
-      margin: 10px 0;
-      font-size: clamp(1.1rem, 3vw, 1.4rem);
+      margin: 12px 0;
+      font-size: 1.4rem;
       position: relative;
       z-index: 2;
+      font-weight: 700;
     }
 
     .explore-card p {
-      font-size: clamp(0.85rem, 2vw, 1rem);
+      font-size: 0.95rem;
       color: var(--text-secondary);
       position: relative;
       z-index: 2;
+      line-height: 1.5;
+      margin-bottom: 16px;
     }
 
     .explore-card .card-footer {
-      margin-top: 15px;
+      margin-top: 20px;
       display: flex;
       justify-content: center;
-      gap: 10px;
+      gap: 20px;
       position: relative;
       z-index: 2;
     }
@@ -608,29 +972,32 @@
     .card-footer .stat {
       display: flex;
       align-items: center;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       color: var(--text-secondary);
+      gap: 6px;
     }
 
     .card-footer .stat i {
-      font-size: 0.9rem;
-      margin-right: 5px;
-      margin-bottom: 0;
+      font-size: 1rem;
+      margin: 0;
+      color: var(--secondary);
     }
 
-    /* Labels */
+    /* Enhanced Labels */
     .label {
       position: absolute;
-      top: 12px;
-      right: 12px;
-      font-size: 0.75em;
-      font-weight: bold;
-      padding: 4px 8px;
-      border-radius: 6px;
+      top: 16px;
+      right: 16px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 10px;
       background: var(--primary);
       color: #fff;
       text-transform: uppercase;
       z-index: 3;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
     .label.soon {
@@ -677,21 +1044,29 @@
     .toggle-btn {
       display: none;
       position: fixed;
-      top: 15px;
-      left: 15px;
-      background: var(--primary);
-      border: none;
-      color: #fff;
-      font-size: 1.2em;
-      padding: 8px 12px;
-      border-radius: 8px;
+      top: calc(16px + var(--safe-area-top));
+      left: 16px;
+      background: rgba(0, 0, 0, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-primary);
+      font-size: 1.2rem;
+      padding: 10px 14px;
+      border-radius: 14px;
       cursor: pointer;
-      z-index: 150;
+      z-index: 1500;
       transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    body.light-theme .toggle-btn {
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(0, 0, 0, 0.15);
     }
 
     .toggle-btn:hover {
-      background: var(--secondary);
+      background: rgba(0, 123, 255, 0.3);
+      transform: translateY(-2px);
     }
 
     .overlay {
@@ -701,15 +1076,27 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(5px);
-      z-index: 90;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 999;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    body.light-theme .overlay {
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    .overlay.active {
+      display: block;
+      opacity: 1;
     }
 
     /* Responsive adjustments */
     @media (max-width: 1200px) {
       .explore-grid {
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
         gap: 20px;
       }
     }
@@ -725,8 +1112,9 @@
 
       .sidebar {
         transform: translateX(-100%);
-        top: var(--header-height);
-        height: calc(100% - var(--header-height));
+        top: 0;
+        height: 100%;
+        padding-top: var(--safe-area-top);
       }
 
       .sidebar.active {
@@ -735,25 +1123,56 @@
 
       .main {
         margin-left: 0;
-        padding: 30px 15px;
-        padding-top: calc(var(--header-height) + 30px);
+        padding: 16px;
+        padding-top: calc(var(--header-height) + 20px);
+        padding-bottom: calc(var(--bottom-nav-height) + 20px);
       }
 
       .toggle-btn {
         display: block;
       }
 
-      .overlay.active {
+      .bottom-nav {
         display: block;
       }
 
       .welcome h1 {
+        font-size: 1.6rem;
         margin-top: 0;
       }
 
       .season-indicator {
-        top: 80px;
-        right: 15px;
+        top: calc(var(--header-height) + 10px);
+        right: 16px;
+      }
+
+      .event-badge {
+        top: calc(var(--header-height) + 10px);
+        left: 16px;
+      }
+
+      .explore-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 16px;
+      }
+
+      .explore-card {
+        padding: 24px 16px;
+      }
+
+      .search-container {
+        margin-bottom: 20px;
+      }
+
+      .filter-container {
+        margin-bottom: 20px;
+        gap: 6px;
+      }
+
+      .filter-btn {
+        padding: 8px 14px;
+        font-size: 0.85rem;
+        min-width: 60px;
       }
     }
 
@@ -761,30 +1180,42 @@
       .explore-grid {
         grid-template-columns: 1fr;
         max-width: 400px;
+        gap: 16px;
       }
 
       .filter-container {
-        gap: 8px;
+        gap: 6px;
       }
 
       .filter-btn {
-        padding: 6px 12px;
-        font-size: 0.9rem;
+        padding: 10px 14px;
+        font-size: 0.85rem;
+        flex: 1;
+        min-width: 0;
       }
 
       .header h1 {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
+      }
+
+      .welcome h1 {
+        font-size: 1.5rem;
+      }
+
+      .welcome p {
+        font-size: 0.9rem;
       }
     }
 
     @media (max-width: 480px) {
       .main {
-        padding: 20px 10px;
-        padding-top: calc(var(--header-height) + 20px);
+        padding: 12px;
+        padding-top: calc(var(--header-height) + 16px);
+        padding-bottom: calc(var(--bottom-nav-height) + 16px);
       }
 
       .welcome {
-        margin-bottom: 30px;
+        margin-bottom: 24px;
       }
 
       .search-container {
@@ -796,7 +1227,51 @@
       }
 
       .explore-grid {
-        gap: 15px;
+        gap: 14px;
+      }
+
+      .explore-card {
+        padding: 20px 14px;
+      }
+
+      .bottom-nav-item span {
+        font-size: 0.65rem;
+      }
+
+      .bottom-nav-item i {
+        font-size: 1.1rem;
+      }
+    }
+
+    /* Landscape orientation optimization */
+    @media (max-height: 500px) and (orientation: landscape) {
+      .header {
+        height: 50px;
+        padding-top: 0;
+      }
+
+      .main {
+        padding-top: 60px;
+      }
+
+      .season-indicator {
+        top: 60px;
+      }
+
+      .event-badge {
+        top: 60px;
+      }
+
+      .bottom-nav {
+        height: 55px;
+      }
+
+      .bottom-nav-item i {
+        margin-bottom: 2px;
+      }
+
+      .bottom-nav-item span {
+        font-size: 0.6rem;
       }
     }
 
@@ -840,17 +1315,23 @@
     /* Resize indicator */
     .resize-indicator {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: rgba(0, 0, 0, 0.7);
+      bottom: calc(var(--bottom-nav-height) + 20px);
+      right: 16px;
+      background: rgba(0, 0, 0, 0.8);
       color: var(--secondary);
       padding: 8px 12px;
       border-radius: 20px;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       opacity: 0;
       transition: opacity 0.3s ease;
       z-index: 1000;
       pointer-events: none;
+      backdrop-filter: blur(10px);
+    }
+
+    body.light-theme .resize-indicator {
+      background: rgba(255, 255, 255, 0.8);
+      color: var(--primary);
     }
 
     .resize-indicator.visible {
@@ -859,7 +1340,7 @@
 
     /* Live stats counter */
     .counter {
-      font-weight: bold;
+      font-weight: 700;
       transition: color 0.3s ease;
     }
 
@@ -872,9 +1353,11 @@
       from {
         transform: scale(1);
       }
+
       50% {
         transform: scale(1.2);
       }
+
       to {
         transform: scale(1);
       }
@@ -885,16 +1368,42 @@
       position: fixed;
       pointer-events: none;
       z-index: -1;
-      opacity: 0.3;
+      opacity: 0.5;
       transition: opacity 0.8s ease;
     }
 
     .snowflake,
     .flower,
     .sun,
-    .leaf {
+    .leaf,
+    .christmas-ball,
+    .snowman,
+    .reindeer,
+    .candy-cane,
+    .gift-box {
       position: absolute;
       animation: float 15s infinite linear;
+      font-size: 24px;
+    }
+
+    .christmas-ball {
+      animation: float 20s infinite linear;
+    }
+
+    .snowman {
+      animation: float 25s infinite linear;
+    }
+
+    .reindeer {
+      animation: float 18s infinite linear;
+    }
+
+    .candy-cane {
+      animation: float 22s infinite linear;
+    }
+
+    .gift-box {
+      animation: float 30s infinite linear;
     }
 
     @keyframes float {
@@ -906,17 +1415,80 @@
         transform: translateY(100vh) rotate(360deg);
       }
     }
+
+    /* Special Christmas Animations */
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-5deg); }
+      75% { transform: rotate(5deg); }
+    }
+
+    .twinkle {
+      animation: twinkle 2s infinite;
+    }
+
+    .shake {
+      animation: shake 0.5s infinite;
+    }
+
+    /* Swipe gestures support */
+    .swipe-indicator {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: var(--secondary);
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-size: 0.8rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 1000;
+      pointer-events: none;
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    body.light-theme .swipe-indicator {
+      background: rgba(255, 255, 255, 0.8);
+      color: var(--primary);
+    }
+
+    .swipe-indicator.visible {
+      opacity: 1;
+    }
   </style>
 </head>
 
 <body>
 
-  <!-- Header for mobile -->
+  <!-- Enhanced Header for mobile -->
   <div class="header">
-    <h1>Qauzium</h1>
-    <button class="toggle-btn" id="sidebarToggle">
-      <i class="fas fa-bars"></i>
-    </button>
+    <div class="header-content">
+      <h1>Qauzium</h1>
+      <div class="header-actions">
+        <button class="header-icon-btn" id="searchToggle">
+          <i class="fas fa-search"></i>
+        </button>
+        <button class="header-icon-btn" id="themeToggleMobile">
+          <i class="fas fa-moon"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Event Badge -->
+  <div class="event-badge" id="eventBadge" style="display: none;">
+    <i class="fas fa-gift"></i>
+    <span id="eventText">Special Event!</span>
   </div>
 
   <!-- Enhanced Sidebar -->
@@ -963,20 +1535,54 @@
     </div>
   </div>
 
+  <!-- Bottom Navigation for Mobile -->
+  <nav class="bottom-nav">
+    <div class="bottom-nav-items">
+      <a href="../index.html" class="bottom-nav-item">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+      </a>
+      <a href="explore.html" class="bottom-nav-item active">
+        <i class="fas fa-compass"></i>
+        <span>Explore</span>
+      </a>
+      <a href="Games/games.html" class="bottom-nav-item">
+        <i class="fas fa-gamepad"></i>
+        <span>Games</span>
+      </a>
+      <a href="profile.html" class="bottom-nav-item">
+        <i class="fas fa-user"></i>
+        <span>Profile</span>
+      </a>
+      <a href="#" class="bottom-nav-item" id="sidebarToggleMobile">
+        <i class="fas fa-bars"></i>
+        <span>Menu</span>
+      </a>
+    </div>
+  </nav>
+
   <!-- Overlay for mobile -->
   <div class="overlay" id="overlay"></div>
 
-  <!-- Seasonal Overlays -->
+  <!-- Seasonal & Event Overlays -->
   <div class="season-overlay winter-overlay" id="winterOverlay"></div>
   <div class="season-overlay spring-overlay" id="springOverlay"></div>
   <div class="season-overlay summer-overlay" id="summerOverlay"></div>
   <div class="season-overlay autumn-overlay" id="autumnOverlay"></div>
+  <div class="season-overlay christmas-overlay" id="christmasOverlay" style="display: none;"></div>
+  <div class="season-overlay newyear-overlay" id="newyearOverlay" style="display: none;"></div>
 
   <!-- Particle System Container -->
   <div id="particles-js"></div>
 
   <!-- Resize indicator -->
   <div class="resize-indicator" id="resizeIndicator"></div>
+
+  <!-- Swipe indicator -->
+  <div class="swipe-indicator" id="swipeIndicator">
+    <i class="fas fa-hand-point-left"></i>
+    Swipe to open menu
+  </div>
 
   <!-- Main content -->
   <div class="main">
@@ -986,12 +1592,11 @@
     </div>
 
     <section class="welcome">
-      <h1>Welcome to Qauzium Dashboard</h1>
-      <p>Explore projects, concepts, and interactive tools. Designed for both PC and mobile with a clean dashboard
-        layout.</p>
+      <h1 id="welcomeTitle">Welcome to Qauzium Dashboard</h1>
+      <p id="welcomeMessage">Explore projects, concepts, and interactive tools. Designed for both PC and mobile with a clean dashboard layout.</p>
     </section>
 
-    <div class="search-container">
+    <div class="search-container" id="searchContainer">
       <input type="text" class="search-box" id="searchInput" placeholder="Search projects...">
       <i class="fas fa-search search-icon"></i>
     </div>
@@ -999,7 +1604,7 @@
     <div class="filter-container">
       <button class="filter-btn active" data-filter="all">All</button>
       <button class="filter-btn" data-filter="popular">Popular</button>
-      <button class="filter-btn" data-filter="soon">Coming Soon</button>
+      <button class="filter-btn" data-filter="soon">Soon</button>
       <button class="filter-btn" data-filter="new">New</button>
     </div>
 
@@ -1066,7 +1671,7 @@
         <span class="label soon">New</span>
         <i class="fas fa-calculator"></i>
         <h2>Qulator</h2>
-        <p>Multy purpose calculator with graphs and step by step solution.</p>
+        <p>Multi-purpose calculator with graphs and step-by-step solution.</p>
         <div class="card-footer">
           <span class="stat"><i class="fas fa-eye"></i> <span class="counter" data-target="0">0</span></span>
           <span class="stat"><i class="fas fa-star"></i> <span class="counter" data-target="0">0</span></span>
@@ -1082,24 +1687,151 @@
     // DOM Elements
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('overlay');
-    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebarToggle = document.querySelector('.toggle-btn');
+    const sidebarToggleMobile = document.getElementById('sidebarToggleMobile');
     const searchInput = document.getElementById('searchInput');
+    const searchToggle = document.getElementById('searchToggle');
+    const searchContainer = document.getElementById('searchContainer');
     const filterButtons = document.querySelectorAll('.filter-btn');
     const exploreCards = document.querySelectorAll('.explore-card');
     const exploreGrid = document.getElementById('exploreGrid');
     const loader = document.getElementById('loader');
     const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleMobile = document.getElementById('themeToggleMobile');
     const animationsToggle = document.getElementById('animations-toggle');
     const resizeIndicator = document.getElementById('resizeIndicator');
     const seasonIndicator = document.getElementById('seasonIndicator');
     const seasonText = document.getElementById('seasonText');
     const seasonIcon = document.getElementById('seasonIcon');
+    const swipeIndicator = document.getElementById('swipeIndicator');
+    const eventBadge = document.getElementById('eventBadge');
+    const eventText = document.getElementById('eventText');
+    const welcomeTitle = document.getElementById('welcomeTitle');
+    const welcomeMessage = document.getElementById('welcomeMessage');
 
     // Settings management
     const settings = {
       animationsEnabled: true,
-      theme: 'dark'
+      theme: 'dark',
+      sidebarOpen: false
     };
+
+    // Events database
+    const events = {
+      christmas: {
+        name: "Christmas",
+        startDate: "12-20", // Month-Day format
+        endDate: "12-27",
+        colors: {
+          primary: "#dc3545",
+          secondary: "#28a745",
+          accent: "#ffd700"
+        },
+        icon: "fa-gift",
+        overlay: "christmas",
+        message: "Merry Christmas! Enjoy the festive season with special surprises!",
+        decorations: ['🎄', '🎅', '🎁', '🔔', '🌟', '❄️', '🦌'],
+        specialDecorations: [
+          { type: 'christmas-ball', emoji: '🔴', color: '#dc3545' },
+          { type: 'snowman', emoji: '⛄', color: '#ffffff' },
+          { type: 'reindeer', emoji: '🦌', color: '#8b4513' },
+          { type: 'candy-cane', emoji: '🎀', color: '#dc3545' },
+          { type: 'gift-box', emoji: '🎁', color: '#28a745' }
+        ]
+      },
+      newyear: {
+        name: "New Year",
+        startDate: "12-28",
+        endDate: "01-03",
+        colors: {
+          primary: "#9c27b0",
+          secondary: "#2196f3",
+          accent: "#ffeb3b"
+        },
+        icon: "fa-champagne-glasses",
+        overlay: "newyear",
+        message: "Happy New Year! Welcome to a year full of possibilities!",
+        decorations: ['🎆', '🎇', '✨', '🥂', '🎉', '🎊'],
+        specialDecorations: [
+          { type: 'firework', emoji: '🎆', color: '#ffeb3b' },
+          { type: 'firework', emoji: '🎇', color: '#2196f3' },
+          { type: 'confetti', emoji: '🎊', color: '#9c27b0' }
+        ]
+      },
+      halloween: {
+        name: "Halloween",
+        startDate: "10-28",
+        endDate: "11-02",
+        colors: {
+          primary: "#ff6f00",
+          secondary: "#ff9800",
+          accent: "#8e24aa"
+        },
+        icon: "fa-ghost",
+        overlay: "",
+        message: "Happy Halloween! Spooky surprises await!",
+        decorations: ['🎃', '👻', '🦇', '🕷️', '🕸️', '💀'],
+        specialDecorations: []
+      },
+      valentine: {
+        name: "Valentine's Day",
+        startDate: "02-12",
+        endDate: "02-16",
+        colors: {
+          primary: "#e91e63",
+          secondary: "#f8bbd9",
+          accent: "#ff4081"
+        },
+        icon: "fa-heart",
+        overlay: "",
+        message: "Happy Valentine's Day! Spread love and kindness!",
+        decorations: ['💖', '💘', '💝', '💕', '💞', '💓'],
+        specialDecorations: []
+      },
+      easter: {
+        name: "Easter",
+        startDate: "03-25",
+        endDate: "04-02",
+        colors: {
+          primary: "#ffeb3b",
+          secondary: "#e1bee7",
+          accent: "#4caf50"
+        },
+        icon: "fa-egg",
+        overlay: "",
+        message: "Happy Easter! New beginnings and fresh starts!",
+        decorations: ['🐰', '🥚', '🐣', '🌸', '🌼', '🌷'],
+        specialDecorations: []
+      }
+    };
+
+    // Check if today is within an event date range
+    function getCurrentEvent() {
+      const now = new Date();
+      const currentMonth = now.getMonth() + 1; // 1-12
+      const currentDay = now.getDate();
+      const currentDate = `${currentMonth.toString().padStart(2, '0')}-${currentDay.toString().padStart(2, '0')}`;
+      
+      for (const [eventName, eventData] of Object.entries(events)) {
+        const start = eventData.startDate;
+        const end = eventData.endDate;
+        
+        // Handle year wrapping (for New Year)
+        if (start > end) {
+          // Event spans across year end (e.g., Dec 28 - Jan 3)
+          if (currentDate >= start || currentDate <= end) {
+            return eventName;
+          }
+        } else {
+          // Normal date range
+          if (currentDate >= start && currentDate <= end) {
+            return eventName;
+          }
+        }
+      }
+      
+      return null;
+    }
 
     // Load settings from localStorage
     function loadSettings() {
@@ -1175,19 +1907,11 @@
       if (settings.theme === 'light') {
         document.body.classList.add('light-theme');
         themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
-        // Update CSS variables for light theme
-        document.documentElement.style.setProperty('--dark-bg', '#f5f5f5');
-        document.documentElement.style.setProperty('--card-bg', 'rgba(255, 255, 255, 0.8)');
-        document.documentElement.style.setProperty('--text-primary', '#333');
-        document.documentElement.style.setProperty('--text-secondary', '#666');
+        themeToggleMobile.innerHTML = '<i class="fas fa-sun"></i>';
       } else {
         document.body.classList.remove('light-theme');
         themeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
-        // Revert to dark theme variables
-        document.documentElement.style.setProperty('--dark-bg', '#121212');
-        document.documentElement.style.setProperty('--card-bg', 'rgba(255, 255, 255, 0.05)');
-        document.documentElement.style.setProperty('--text-primary', '#fff');
-        document.documentElement.style.setProperty('--text-secondary', '#bbb');
+        themeToggleMobile.innerHTML = '<i class="fas fa-moon"></i>';
       }
     }
 
@@ -1257,33 +1981,162 @@
     function applySeasonalTheme(season) {
       const seasonData = seasons[season];
 
-      // Remove all season classes
-      document.body.classList.remove("season-winter", "season-spring", "season-summer", "season-autumn");
+      // Remove all season and event classes
+      document.body.classList.remove(
+        "season-winter", "season-spring", "season-summer", "season-autumn",
+        "event-christmas", "event-newyear", "event-halloween", "event-valentine", "event-easter"
+      );
 
       // Hide all seasonal overlays
       document.querySelectorAll('.season-overlay').forEach(overlay => {
-        overlay.style.opacity = "0";
+        overlay.style.display = "none";
       });
 
-      // Apply the current season class
-      document.body.classList.add(`season-${season}`);
+      // Check for active event first
+      const currentEvent = getCurrentEvent();
+      
+      if (currentEvent) {
+        const eventData = events[currentEvent];
+        
+        // Apply event theme
+        document.body.classList.add(`event-${currentEvent}`);
+        
+        // Show event overlay if it exists
+        if (eventData.overlay) {
+          const eventOverlay = document.getElementById(`${eventData.overlay}Overlay`);
+          if (eventOverlay) {
+            eventOverlay.style.display = "block";
+            eventOverlay.style.opacity = "var(--season-overlay-opacity)";
+          }
+        }
+        
+        // Update season indicator with event info
+        seasonText.textContent = eventData.name;
+        seasonIcon.className = `fas ${eventData.icon}`;
+        
+        // Show event badge
+        eventBadge.style.display = "flex";
+        eventText.textContent = `${eventData.name} Event!`;
+        
+        // Update welcome message
+        welcomeTitle.innerHTML = `Happy ${eventData.name}! 🎉`;
+        welcomeMessage.textContent = eventData.message;
+        
+        // Add event decorations
+        addEventDecorations(currentEvent);
+        
+        // Update particles for the event
+        updateParticlesForEvent(currentEvent);
+      } else {
+        // Apply the current season class
+        document.body.classList.add(`season-${season}`);
 
-      // Show the current season overlay
-      const currentOverlay = document.getElementById(`${season}Overlay`);
-      if (currentOverlay) {
-        currentOverlay.style.opacity = "0.15";
+        // Show the current season overlay
+        const currentOverlay = document.getElementById(`${season}Overlay`);
+        if (currentOverlay) {
+          currentOverlay.style.display = "block";
+          currentOverlay.style.opacity = "var(--season-overlay-opacity)";
+        }
+
+        // Update season indicator
+        seasonText.textContent = seasonData.name;
+        seasonIcon.className = `fas ${seasonData.icon}`;
+        
+        // Hide event badge
+        eventBadge.style.display = "none";
+        
+        // Reset welcome message
+        welcomeTitle.textContent = "Welcome to Qauzium Dashboard";
+        welcomeMessage.textContent = "Explore projects, concepts, and interactive tools. Designed for both PC and mobile with a clean dashboard layout.";
+
+        // Update particles for the season
+        updateParticles(season);
+
+        // Only add seasonal decorations if animations are enabled
+        if (settings.animationsEnabled) {
+          addSeasonalDecorations(season);
+        }
       }
+    }
 
-      // Update season indicator
-      seasonText.textContent = seasonData.name;
-      seasonIcon.className = `fas ${seasonData.icon}`;
+    // Add event-specific decorations
+    function addEventDecorations(eventName) {
+      // Remove existing decorations
+      document.querySelectorAll('.season-decoration').forEach(el => el.remove());
 
-      // Update particles for the season
-      updateParticles(season);
+      // Only add decorations if animations are enabled
+      if (!settings.animationsEnabled) return;
 
-      // Only add seasonal decorations if animations are enabled
-      if (settings.animationsEnabled) {
-        addSeasonalDecorations(season);
+      const eventData = events[eventName];
+      if (!eventData) return;
+
+      const decorationContainer = document.createElement('div');
+      decorationContainer.className = 'season-decoration';
+      document.body.appendChild(decorationContainer);
+
+      // Add special decorations if available
+      if (eventData.specialDecorations && eventData.specialDecorations.length > 0) {
+        const count = eventName === 'christmas' ? 20 : 15; // More decorations for Christmas
+        
+        for (let i = 0; i < count; i++) {
+          const decoration = document.createElement('div');
+          
+          // Set random position
+          const left = Math.random() * 100;
+          const animationDelay = Math.random() * 15;
+          const size = Math.random() * 20 + 15;
+          
+          decoration.style.left = `${left}%`;
+          decoration.style.animationDelay = `${animationDelay}s`;
+          decoration.style.fontSize = `${size}px`;
+          
+          // Choose random decoration type
+          const decoType = eventData.specialDecorations[
+            Math.floor(Math.random() * eventData.specialDecorations.length)
+          ];
+          
+          decoration.className = decoType.type;
+          decoration.innerHTML = decoType.emoji;
+          decoration.style.color = decoType.color;
+          
+          // Add twinkle effect for Christmas
+          if (eventName === 'christmas') {
+            if (Math.random() > 0.5) {
+              decoration.classList.add('twinkle');
+              decoration.style.animationDelay = `${Math.random() * 2}s`;
+            }
+            if (decoType.type === 'gift-box') {
+              decoration.classList.add('shake');
+            }
+          }
+          
+          decorationContainer.appendChild(decoration);
+        }
+      }
+      
+      // Add regular decorations
+      const regularCount = 10;
+      for (let i = 0; i < regularCount; i++) {
+        const decoration = document.createElement('div');
+        
+        // Set random position
+        const left = Math.random() * 100;
+        const animationDelay = Math.random() * 15;
+        const size = Math.random() * 16 + 10;
+        
+        decoration.style.left = `${left}%`;
+        decoration.style.animationDelay = `${animationDelay}s`;
+        decoration.style.fontSize = `${size}px`;
+        
+        // Choose random emoji
+        const randomEmoji = eventData.decorations[
+          Math.floor(Math.random() * eventData.decorations.length)
+        ];
+        
+        decoration.className = 'event-decoration';
+        decoration.innerHTML = randomEmoji;
+        
+        decorationContainer.appendChild(decoration);
       }
     }
 
@@ -1297,6 +2150,32 @@
         // Update particle colors
         pJS.particles.color.value = seasonColors.secondary;
         pJS.particles.line_linked.color = seasonColors.primary;
+
+        // Refresh particles
+        pJS.fn.particlesRefresh();
+      }
+    }
+
+    // Update particles for event
+    function updateParticlesForEvent(eventName) {
+      const eventData = events[eventName];
+      if (!eventData) return;
+
+      if (window.pJSDom && window.pJSDom[0] && window.pJSDom[0].pJS) {
+        const pJS = window.pJSDom[0].pJS;
+
+        // Update particle colors
+        pJS.particles.color.value = eventData.colors.secondary;
+        pJS.particles.line_linked.color = eventData.colors.primary;
+        
+        // Special particle effects for Christmas
+        if (eventName === 'christmas') {
+          pJS.particles.number.value = window.innerWidth < 768 ? 60 : 80;
+          pJS.particles.shape.type = ["circle", "edge"];
+        } else {
+          pJS.particles.number.value = window.innerWidth < 768 ? 25 : 40;
+          pJS.particles.shape.type = "circle";
+        }
 
         // Refresh particles
         pJS.fn.particlesRefresh();
@@ -1366,7 +2245,7 @@
 
       particlesJS('particles-js', {
         particles: {
-          number: { value: 40, density: { enable: true, value_area: 800 } },
+          number: { value: window.innerWidth < 768 ? 25 : 40, density: { enable: true, value_area: 800 } },
           color: { value: "#00eaff" },
           shape: { type: "circle" },
           opacity: { value: 0.5, random: true },
@@ -1400,16 +2279,50 @@
       });
     }
 
+    // Toggle sidebar
+    function toggleSidebar() {
+      settings.sidebarOpen = !settings.sidebarOpen;
+      
+      if (settings.sidebarOpen) {
+        sidebar.classList.add('active');
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      } else {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+      
+      saveSettings();
+    }
+
     // Mobile sidebar toggle
-    sidebarToggle.addEventListener('click', () => {
-      sidebar.classList.toggle('active');
-      overlay.classList.toggle('active');
+    if (sidebarToggle) {
+      sidebarToggle.addEventListener('click', toggleSidebar);
+    }
+    
+    if (sidebarToggleMobile) {
+      sidebarToggleMobile.addEventListener('click', (e) => {
+        e.preventDefault();
+        toggleSidebar();
+      });
+    }
+
+    // Search toggle for mobile
+    searchToggle.addEventListener('click', () => {
+      searchContainer.classList.toggle('mobile-search-active');
+      if (searchContainer.classList.contains('mobile-search-active')) {
+        searchInput.focus();
+      }
     });
 
     // Close sidebar when clicking overlay
     overlay.addEventListener('click', () => {
+      settings.sidebarOpen = false;
       sidebar.classList.remove('active');
       overlay.classList.remove('active');
+      document.body.style.overflow = '';
+      saveSettings();
     });
 
     // Filter functionality
@@ -1455,10 +2368,19 @@
       });
     });
 
-    // Theme toggle functionality with enhanced transition
+    // Theme toggle functionality
     themeToggle.addEventListener('click', (e) => {
       e.preventDefault();
+      toggleTheme();
+    });
 
+    // Mobile theme toggle
+    themeToggleMobile.addEventListener('click', (e) => {
+      e.preventDefault();
+      toggleTheme();
+    });
+
+    function toggleTheme() {
       // Add transition class to body for smooth theme change
       document.body.classList.add('theme-transition');
 
@@ -1468,19 +2390,11 @@
         if (isDark) {
           settings.theme = 'light';
           themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
-          // Update CSS variables for light theme
-          document.documentElement.style.setProperty('--dark-bg', '#f5f5f5');
-          document.documentElement.style.setProperty('--card-bg', 'rgba(255, 255, 255, 0.8)');
-          document.documentElement.style.setProperty('--text-primary', '#333');
-          document.documentElement.style.setProperty('--text-secondary', '#666');
+          themeToggleMobile.innerHTML = '<i class="fas fa-sun"></i>';
         } else {
           settings.theme = 'dark';
           themeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
-          // Revert to dark theme variables
-          document.documentElement.style.setProperty('--dark-bg', '#121212');
-          document.documentElement.style.setProperty('--card-bg', 'rgba(255, 255, 255, 0.05)');
-          document.documentElement.style.setProperty('--text-primary', '#fff');
-          document.documentElement.style.setProperty('--text-secondary', '#bbb');
+          themeToggleMobile.innerHTML = '<i class="fas fa-moon"></i>';
         }
 
         // Save settings
@@ -1491,7 +2405,7 @@
           document.body.classList.remove('theme-transition');
         }, 500);
       }, 100);
-    });
+    }
 
     // Animations toggle functionality
     animationsToggle.addEventListener('click', (e) => {
@@ -1510,6 +2424,62 @@
       saveSettings();
     });
 
+    // Swipe gestures for mobile sidebar
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+
+    document.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    });
+
+    function handleSwipe() {
+      const swipeThreshold = 50;
+      const screenWidth = window.innerWidth;
+      
+      // Only enable swipe on mobile screens
+      if (screenWidth > 968) return;
+      
+      const swipeDistance = touchEndX - touchStartX;
+      
+      // Right swipe to open sidebar (if starting from left edge)
+      if (swipeDistance > swipeThreshold && touchStartX < 50 && !settings.sidebarOpen) {
+        settings.sidebarOpen = true;
+        sidebar.classList.add('active');
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        saveSettings();
+      }
+      
+      // Left swipe to close sidebar
+      if (swipeDistance < -swipeThreshold && settings.sidebarOpen) {
+        settings.sidebarOpen = false;
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+        saveSettings();
+      }
+    }
+
+    // Show swipe indicator on first visit
+    function showSwipeIndicator() {
+      const hasSeenSwipeIndicator = localStorage.getItem('hasSeenSwipeIndicator');
+      const screenWidth = window.innerWidth;
+      
+      if (!hasSeenSwipeIndicator && screenWidth <= 968) {
+        swipeIndicator.classList.add('visible');
+        
+        setTimeout(() => {
+          swipeIndicator.classList.remove('visible');
+          localStorage.setItem('hasSeenSwipeIndicator', 'true');
+        }, 3000);
+      }
+    }
+
     // Animate cards on page load
     document.addEventListener('DOMContentLoaded', () => {
       // Load settings first
@@ -1525,9 +2495,12 @@
       // Initialize particles
       initParticles();
 
-      // Apply seasonal theme
+      // Apply seasonal theme (checks for events first)
       const currentSeason = getCurrentSeason();
       applySeasonalTheme(currentSeason);
+
+      // Show swipe indicator if needed
+      showSwipeIndicator();
     });
 
     // Animated counter functionality
@@ -1579,19 +2552,67 @@
         // For larger screens, ensure sidebar is visible
         sidebar.classList.remove('active');
         overlay.classList.remove('active');
+        document.body.style.overflow = '';
+        settings.sidebarOpen = false;
       } else {
-        // For smaller screens, ensure sidebar is hidden by default
-        if (!sidebar.classList.contains('active')) {
+        // For smaller screens, ensure sidebar is hidden by default if not opened
+        if (!settings.sidebarOpen) {
           sidebar.classList.remove('active');
           overlay.classList.remove('active');
         }
       }
+      
+      // Reinitialize particles for current event
+      const currentEvent = getCurrentEvent();
+      if (currentEvent) {
+        updateParticlesForEvent(currentEvent);
+      }
     });
+
+    // Add CSS for mobile search active state
+    const style = document.createElement('style');
+    style.textContent = `
+      @media (max-width: 968px) {
+        .search-container.mobile-search-active {
+          position: fixed;
+          top: var(--header-height);
+          left: 0;
+          right: 0;
+          z-index: 1002;
+          background: rgba(0, 0, 0, 0.95);
+          backdrop-filter: blur(20px);
+          padding: 16px;
+          margin: 0;
+          animation: slideDown 0.3s ease;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        body.light-theme .search-container.mobile-search-active {
+          background: rgba(255, 255, 255, 0.95);
+          border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        @keyframes slideDown {
+          from {
+            transform: translateY(-20px);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
+      }
+      
+      /* Theme transition */
+      .theme-transition * {
+        transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease !important;
+      }
+    `;
+    document.head.appendChild(style);
 
     // Initial call to handle responsive layout on load
     window.dispatchEvent(new Event('resize'));
   </script>
 </body>
 </html>
-
-
