@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Qulator</title>
+    <title>Qulator - Advanced Math Calculator</title>
     <link rel="icon" href="logos/logo.png" type="image/png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.7.0/math.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -349,6 +349,7 @@
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
+            flex-wrap: wrap;
         }
 
         button {
@@ -437,6 +438,10 @@
             color: var(--accent);
             font-weight: 600;
             margin-top: 10px;
+            padding: 10px;
+            background: rgba(255, 71, 87, 0.1);
+            border-radius: 5px;
+            border-left: 3px solid var(--accent);
         }
 
         /* Scientific Calculator Styles */
@@ -615,6 +620,64 @@
             border: 1px dashed rgba(255, 255, 255, 0.1);
         }
 
+        /* History Container */
+        .history-container {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 25px;
+            backdrop-filter: blur(15px);
+            box-shadow: var(--card-shadow);
+        }
+
+        .history-container h3 {
+            color: var(--secondary);
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+
+        .history-item {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .history-time {
+            font-size: 0.8em;
+            color: var(--text-secondary);
+        }
+
+        .history-problem {
+            font-weight: 600;
+            margin: 5px 0;
+            font-family: 'Cambria Math', serif;
+        }
+
+        .history-solution {
+            color: var(--secondary);
+            font-family: 'Cambria Math', serif;
+        }
+
+        .step-explanation {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            margin-left: 30px;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
         /* Enhanced Animations */
         @keyframes fadeIn {
             from {
@@ -627,7 +690,7 @@
             }
         }
 
-        .math-topics, .calculator-area, .scientific-calculator, .graph-container {
+        .math-topics, .calculator-area, .scientific-calculator, .graph-container, .history-container {
             animation: fadeIn 0.6s ease forwards;
         }
 
@@ -738,7 +801,7 @@
                 <i class="fas fa-leaf" id="seasonIcon"></i>
                 <span id="seasonText">Season</span>
             </div>
-            <a href="explore.html" class="back-btn">
+            <a href="#" class="back-btn" onclick="window.history.back()">
                 <i class="fas fa-arrow-left"></i> Back to Menu
             </a>
         </div>
@@ -794,7 +857,7 @@
 
             <!-- Calculator Area -->
             <div class="calculator-area" style="animation-delay: 0.2s">
-                <h2><i class="fas fa-calculator"></i> Math Calculator</h2>
+                <h2><i class="fas fa-calculator"></i> <span id="current-topic">Math Calculator</span></h2>
                 
                 <div class="input-section">
                     <div class="input-group">
@@ -809,6 +872,7 @@
                     <div class="button-group">
                         <button id="calculate-btn" class="btn-primary">Calculate</button>
                         <button id="clear-btn" class="btn-secondary">Clear</button>
+                        <button id="step-by-step-btn" class="btn-secondary">Show Steps</button>
                     </div>
                 </div>
                 
@@ -842,6 +906,7 @@
                     <input type="number" id="y-max" value="10">
                 </div>
                 <button id="update-graph" class="btn-primary">Update Graph</button>
+                <button id="export-graph" class="btn-secondary">Export PNG</button>
             </div>
             <div id="graph-placeholder" class="graph-placeholder">
                 Graph will appear here after calculation
@@ -855,6 +920,7 @@
                 <h3><i class="fas fa-cogs"></i> Scientific Calculator</h3>
                 <div class="calculator-mode">
                     <button class="calc-btn function" id="deg-rad-toggle">DEG</button>
+                    <button class="calc-btn function" id="complex-toggle">Real</button>
                 </div>
             </div>
             
@@ -926,9 +992,648 @@
                 <button class="calc-btn equals" data-action="equals">=</button>
             </div>
         </div>
+
+        <!-- History Panel -->
+        <div class="history-container" style="animation-delay: 0.5s">
+            <h3><i class="fas fa-history"></i> Calculation History</h3>
+            <div class="history-list" id="history-list">
+                <p style="color: var(--text-secondary); text-align: center; padding: 20px;">
+                    No calculations yet. Solve some problems to see history here.
+                </p>
+            </div>
+            <div class="button-group">
+                <button id="clear-history" class="btn-secondary">Clear History</button>
+                <button id="export-history" class="btn-secondary">Export History</button>
+            </div>
+        </div>
     </main>
 
     <script>
+        // Enhanced Math Engine
+        class MathEngine {
+            constructor() {
+                this.history = [];
+                this.loadHistory();
+            }
+
+            saveHistory() {
+                localStorage.setItem('qulator_history', JSON.stringify(this.history.slice(0, 50)));
+            }
+
+            loadHistory() {
+                const saved = localStorage.getItem('qulator_history');
+                if (saved) {
+                    this.history = JSON.parse(saved);
+                }
+            }
+
+            storeInHistory(problem, solution, steps, subtopic) {
+                const entry = {
+                    timestamp: new Date().toLocaleTimeString(),
+                    date: new Date().toLocaleDateString(),
+                    problem,
+                    solution,
+                    subtopic,
+                    steps: steps ? steps.slice(0, 3) : []
+                };
+                this.history.unshift(entry);
+                if (this.history.length > 50) this.history.pop();
+                this.saveHistory();
+                return entry;
+            }
+
+            // Parse equation
+            parseEquation(equation) {
+                equation = equation.replace(/\s+/g, '');
+                
+                if (equation.includes('=')) {
+                    const [left, right] = equation.split('=');
+                    return { left, right, type: 'equation' };
+                } else if (equation.includes('f(') && equation.includes(')=')) {
+                    return { type: 'function', expression: equation };
+                } else {
+                    return { type: 'expression', expression: equation };
+                }
+            }
+
+            // Linear Equations
+            solveLinearEquation(equation) {
+                const steps = [];
+                try {
+                    const parsed = this.parseEquation(equation);
+                    if (parsed.type !== 'equation') {
+                        throw new Error('Please enter an equation with = sign');
+                    }
+
+                    steps.push(`Step 1: Original equation: ${parsed.left} = ${parsed.right}`);
+                    
+                    // Move all terms to left side
+                    const expr = math.parse(`${parsed.left} - (${parsed.right})`);
+                    steps.push(`Step 2: Move all terms to left: ${expr.toString()} = 0`);
+                    
+                    // Simplify
+                    const simplified = math.simplify(expr);
+                    steps.push(`Step 3: Simplify: ${simplified.toString()} = 0`);
+                    
+                    // Solve for x
+                    const solutions = math.solve(expr.toString(), 'x');
+                    const solution = solutions[0] || solutions;
+                    
+                    steps.push(`Step 4: Solve for x: x = ${solution}`);
+                    
+                    return {
+                        steps,
+                        solution: `x = ${solution}`,
+                        value: solution
+                    };
+                } catch (error) {
+                    return {
+                        steps: [`Error: ${error.message}`],
+                        solution: 'Could not solve equation'
+                    };
+                }
+            }
+
+            // Quadratic Equations
+            solveQuadraticEquation(equation) {
+                const steps = [];
+                try {
+                    const parsed = this.parseEquation(equation);
+                    if (parsed.type !== 'equation') {
+                        throw new Error('Please enter an equation with = sign');
+                    }
+
+                    steps.push(`Step 1: Original equation: ${parsed.left} = ${parsed.right}`);
+                    
+                    // Standard form
+                    const expr = math.parse(`${parsed.left} - (${parsed.right})`);
+                    const simplified = math.simplify(expr);
+                    steps.push(`Step 2: Standard form: ${simplified.toString()} = 0`);
+                    
+                    // Get coefficients
+                    const coeffs = math.polynomialCoefficients(simplified.toString(), 'x');
+                    const [c, b, a] = coeffs.reverse();
+                    
+                    steps.push(`Step 3: Coefficients: a = ${a}, b = ${b}, c = ${c}`);
+                    
+                    // Discriminant
+                    const discriminant = b*b - 4*a*c;
+                    steps.push(`Step 4: Discriminant: D = b² - 4ac = ${discriminant}`);
+                    
+                    if (discriminant > 0) {
+                        const sqrtD = Math.sqrt(discriminant);
+                        const x1 = (-b + sqrtD) / (2*a);
+                        const x2 = (-b - sqrtD) / (2*a);
+                        steps.push(`Step 5: Two real solutions:`);
+                        steps.push(`x₁ = (-b + √D)/(2a) = ${x1.toFixed(4)}`);
+                        steps.push(`x₂ = (-b - √D)/(2a) = ${x2.toFixed(4)}`);
+                        
+                        return {
+                            steps,
+                            solution: `x₁ = ${x1.toFixed(4)}, x₂ = ${x2.toFixed(4)}`,
+                            solutions: [x1, x2]
+                        };
+                    } else if (discriminant === 0) {
+                        const x = -b / (2*a);
+                        steps.push(`Step 5: One real solution (double root):`);
+                        steps.push(`x = -b/(2a) = ${x.toFixed(4)}`);
+                        
+                        return {
+                            steps,
+                            solution: `x = ${x.toFixed(4)}`,
+                            solutions: [x]
+                        };
+                    } else {
+                        const real = -b / (2*a);
+                        const imag = Math.sqrt(-discriminant) / (2*a);
+                        steps.push(`Step 5: Two complex solutions:`);
+                        steps.push(`x₁ = ${real.toFixed(4)} + ${imag.toFixed(4)}i`);
+                        steps.push(`x₂ = ${real.toFixed(4)} - ${imag.toFixed(4)}i`);
+                        
+                        return {
+                            steps,
+                            solution: `x₁ = ${real.toFixed(4)} + ${imag.toFixed(4)}i, x₂ = ${real.toFixed(4)} - ${imag.toFixed(4)}i`,
+                            solutions: [{real, imag}, {real, imag: -imag}]
+                        };
+                    }
+                } catch (error) {
+                    return {
+                        steps: [`Error: ${error.message}`],
+                        solution: 'Could not solve quadratic equation'
+                    };
+                }
+            }
+
+            // Systems of Equations
+            solveSystemOfEquations(equation1, equation2) {
+                const steps = [];
+                try {
+                    if (!equation1 || !equation2) {
+                        throw new Error('Please enter both equations');
+                    }
+
+                    steps.push(`Step 1: System of equations:`);
+                    steps.push(`1) ${equation1}`);
+                    steps.push(`2) ${equation2}`);
+                    
+                    // Parse equations
+                    const eq1 = this.parseEquation(equation1);
+                    const eq2 = this.parseEquation(equation2);
+                    
+                    if (eq1.type !== 'equation' || eq2.type !== 'equation') {
+                        throw new Error('Both must be equations with = sign');
+                    }
+                    
+                    // Extract coefficients (simplified approach)
+                    const vars = ['x', 'y'];
+                    const coeffs = [[], []];
+                    const constants = [];
+                    
+                    [eq1, eq2].forEach((eq, idx) => {
+                        const expr = math.parse(`(${eq.left}) - (${eq.right})`);
+                        const simplified = math.simplify(expr);
+                        
+                        let coeffX = 0, coeffY = 0, constant = 0;
+                        
+                        // Simple coefficient extraction
+                        const str = simplified.toString();
+                        if (str.includes('x')) {
+                            const match = str.match(/([-+]?\d*)x/);
+                            coeffX = match ? parseFloat(match[1] || (match[0].startsWith('-') ? '-1' : '1')) : 0;
+                        }
+                        if (str.includes('y')) {
+                            const match = str.match(/([-+]?\d*)y/);
+                            coeffY = match ? parseFloat(match[1] || (match[0].startsWith('-') ? '-1' : '1')) : 0;
+                        }
+                        
+                        // Extract constant
+                        const constantMatch = str.match(/([-+]?\d+)(?![\w])/);
+                        constant = constantMatch ? -parseFloat(constantMatch[1]) : 0;
+                        
+                        coeffs[idx] = [coeffX, coeffY];
+                        constants[idx] = constant;
+                    });
+                    
+                    steps.push(`Step 2: Coefficient matrix: [[${coeffs[0][0]}, ${coeffs[0][1]}], [${coeffs[1][0]}, ${coeffs[1][1]}]]`);
+                    steps.push(`Step 3: Constant vector: [${constants[0]}, ${constants[1]}]`);
+                    
+                    // Solve using Cramer's rule
+                    const det = coeffs[0][0]*coeffs[1][1] - coeffs[0][1]*coeffs[1][0];
+                    
+                    if (Math.abs(det) < 0.0001) {
+                        steps.push(`Step 4: Determinant is zero - system may have no solution or infinite solutions`);
+                        return {
+                            steps,
+                            solution: 'System is dependent or inconsistent',
+                            solutions: null
+                        };
+                    }
+                    
+                    const detX = constants[0]*coeffs[1][1] - coeffs[0][1]*constants[1];
+                    const detY = coeffs[0][0]*constants[1] - constants[0]*coeffs[1][0];
+                    
+                    const x = detX / det;
+                    const y = detY / det;
+                    
+                    steps.push(`Step 4: Determinant = ${det.toFixed(4)}`);
+                    steps.push(`Step 5: x = detX/det = ${x.toFixed(4)}`);
+                    steps.push(`Step 6: y = detY/det = ${y.toFixed(4)}`);
+                    
+                    return {
+                        steps,
+                        solution: `x = ${x.toFixed(4)}, y = ${y.toFixed(4)}`,
+                        solutions: [x, y]
+                    };
+                } catch (error) {
+                    return {
+                        steps: [`Error: ${error.message}`],
+                        solution: 'Could not solve system of equations'
+                    };
+                }
+            }
+
+            // Polynomial Operations
+            solvePolynomial(expression) {
+                const steps = [];
+                try {
+                    steps.push(`Step 1: Original expression: ${expression}`);
+                    
+                    const simplified = math.simplify(expression);
+                    steps.push(`Step 2: Simplified: ${simplified.toString()}`);
+                    
+                    // Try to factor
+                    try {
+                        const factored = math.simplify(simplified.toString());
+                        if (factored.toString() !== simplified.toString()) {
+                            steps.push(`Step 3: Factored form: ${factored.toString()}`);
+                        }
+                    } catch (e) {
+                        // Ignore if can't factor
+                    }
+                    
+                    // Try to find roots if it's a polynomial equation
+                    if (expression.includes('=')) {
+                        const parsed = this.parseEquation(expression);
+                        const poly = math.parse(`(${parsed.left}) - (${parsed.right})`);
+                        const simplifiedPoly = math.simplify(poly);
+                        
+                        try {
+                            const roots = math.polynomialRoot(simplifiedPoly.toString());
+                            if (roots && roots.length > 0) {
+                                steps.push(`Step 4: Roots: ${roots.map(r => r.toFixed(4)).join(', ')}`);
+                            }
+                        } catch (e) {
+                            // Ignore if can't find roots
+                        }
+                    }
+                    
+                    return {
+                        steps,
+                        solution: simplified.toString(),
+                        value: simplified.toString()
+                    };
+                } catch (error) {
+                    return {
+                        steps: [`Error: ${error.message}`],
+                        solution: 'Could not process polynomial'
+                    };
+                }
+            }
+
+            // Exponents & Radicals
+            solveExponents(expression) {
+                const steps = [];
+                try {
+                    steps.push(`Step 1: Original: ${expression}`);
+                    
+                    // Replace sqrt notation
+                    let processed = expression.replace(/√(\w+)/g, 'sqrt($1)');
+                    processed = processed.replace(/√\(([^)]+)\)/g, 'sqrt($1)');
+                    
+                    const simplified = math.simplify(processed);
+                    steps.push(`Step 2: Simplified: ${simplified.toString()}`);
+                    
+                    // Evaluate if no variables
+                    if (!/[a-df-zA-DF-Z]/.test(expression.replace(/sqrt|pi|e/g, ''))) {
+                        const value = math.evaluate(processed);
+                        steps.push(`Step 3: Numerical value: ${value}`);
+                        
+                        return {
+                            steps,
+                            solution: `${simplified.toString()} = ${value}`,
+                            value: value
+                        };
+                    }
+                    
+                    return {
+                        steps,
+                        solution: simplified.toString(),
+                        value: simplified.toString()
+                    };
+                } catch (error) {
+                    return {
+                        steps: [`Error: ${error.message}`],
+                        solution: 'Could not simplify expression'
+                    };
+                }
+            }
+
+            // Functions
+            solveFunction(expression, value) {
+                const steps = [];
+                try {
+                    if (expression.includes('=')) {
+                        const [funcDef, funcExpr] = expression.split('=');
+                        const funcName = funcDef.match(/(\w+)\(/)?.[1] || 'f';
+                        
+                        steps.push(`Step 1: Function definition: ${funcName}(x) = ${funcExpr}`);
+                        
+                        if (value !== undefined && value !== '') {
+                            const xVal = parseFloat(value);
+                            const result = math.evaluate(funcExpr.trim(), { x: xVal });
+                            steps.push(`Step 2: Evaluate at x = ${xVal}: ${funcName}(${xVal}) = ${result}`);
+                            
+                            return {
+                                steps,
+                                solution: `${funcName}(${xVal}) = ${result}`,
+                                value: result
+                            };
+                        } else {
+                            // Just show the function
+                            return {
+                                steps,
+                                solution: `${funcName}(x) = ${funcExpr}`,
+                                value: funcExpr
+                            };
+                        }
+                    } else {
+                        // Try to evaluate as expression
+                        const result = math.evaluate(expression);
+                        steps.push(`Step 1: Evaluate: ${expression} = ${result}`);
+                        
+                        return {
+                            steps,
+                            solution: `${expression} = ${result}`,
+                            value: result
+                        };
+                    }
+                } catch (error) {
+                    return {
+                        steps: [`Error: ${error.message}`],
+                        solution: 'Could not process function'
+                    };
+                }
+            }
+
+            // Logarithms
+            solveLogarithms(expression) {
+                const steps = [];
+                try {
+                    steps.push(`Step 1: Original: ${expression}`);
+                    
+                    const simplified = math.simplify(expression);
+                    steps.push(`Step 2: Simplified: ${simplified.toString()}`);
+                    
+                    // Evaluate if possible
+                    if (!/[a-df-zA-DF-Z]/.test(expression.replace(/log|ln|pi|e/g, ''))) {
+                        const value = math.evaluate(expression);
+                        steps.push(`Step 3: Numerical value: ${value}`);
+                        
+                        return {
+                            steps,
+                            solution: `${simplified.toString()} = ${value}`,
+                            value: value
+                        };
+                    }
+                    
+                    return {
+                        steps,
+                        solution: simplified.toString(),
+                        value: simplified.toString()
+                    };
+                } catch (error) {
+                    return {
+                        steps: [`Error: ${error.message}`],
+                        solution: 'Could not process logarithm'
+                    };
+                }
+            }
+
+            // Trigonometry
+            solveTrigonometry(expression, isDegreeMode) {
+                const steps = [];
+                try {
+                    steps.push(`Step 1: Original: ${expression} (${isDegreeMode ? 'Degrees' : 'Radians'})`);
+                    
+                    let processed = expression;
+                    if (isDegreeMode) {
+                        // Convert trig functions to use degrees
+                        processed = processed.replace(/sin\(/g, 'sin(pi/180*');
+                        processed = processed.replace(/cos\(/g, 'cos(pi/180*');
+                        processed = processed.replace(/tan\(/g, 'tan(pi/180*');
+                        processed = processed.replace(/\)/g, '))');
+                    }
+                    
+                    const simplified = math.simplify(processed);
+                    steps.push(`Step 2: Simplified: ${simplified.toString()}`);
+                    
+                    // Evaluate if possible
+                    if (!/[a-df-zA-DF-Z]/.test(expression.replace(/sin|cos|tan|pi|e/g, ''))) {
+                        const value = math.evaluate(processed);
+                        steps.push(`Step 3: Numerical value: ${value}`);
+                        
+                        return {
+                            steps,
+                            solution: `${simplified.toString()} = ${value}`,
+                            value: value
+                        };
+                    }
+                    
+                    return {
+                        steps,
+                        solution: simplified.toString(),
+                        value: simplified.toString()
+                    };
+                } catch (error) {
+                    return {
+                        steps: [`Error: ${error.message}`],
+                        solution: 'Could not process trigonometric expression'
+                    };
+                }
+            }
+
+            // Limits
+            solveLimits(expression) {
+                const steps = [];
+                try {
+                    // Parse limit expression: lim(x→a) f(x)
+                    const match = expression.match(/lim\(([^)]+)\)(.+)/);
+                    if (!match) {
+                        throw new Error('Use format: lim(x→a) f(x)');
+                    }
+                    
+                    const [_, variablePart, func] = match;
+                    const varMatch = variablePart.match(/(\w+)\s*→\s*([^,]+)/);
+                    if (!varMatch) {
+                        throw new Error('Use format: lim(x→a) f(x)');
+                    }
+                    
+                    const [__, variable, pointStr] = varMatch;
+                    const point = parseFloat(pointStr);
+                    
+                    steps.push(`Step 1: Limit: lim(${variable}→${point}) ${func}`);
+                    
+                    // Try direct substitution
+                    try {
+                        const direct = math.evaluate(func, { [variable]: point });
+                        if (!isNaN(direct) && isFinite(direct)) {
+                            steps.push(`Step 2: Direct substitution: ${direct}`);
+                            return {
+                                steps,
+                                solution: direct,
+                                value: direct
+                            };
+                        }
+                    } catch (e) {
+                        steps.push(`Step 2: Direct substitution failed (indeterminate form)`);
+                    }
+                    
+                    // Numerical approach
+                    const epsilon = 0.0001;
+                    const left = math.evaluate(func, { [variable]: point - epsilon });
+                    const right = math.evaluate(func, { [variable]: point + epsilon });
+                    
+                    steps.push(`Step 3: Left approach (${point}⁻): ${left}`);
+                    steps.push(`Step 4: Right approach (${point}⁺): ${right}`);
+                    
+                    if (Math.abs(left - right) < 0.001) {
+                        const limit = (left + right) / 2;
+                        steps.push(`Step 5: Limit exists: ${limit}`);
+                        
+                        return {
+                            steps,
+                            solution: limit,
+                            value: limit
+                        };
+                    } else {
+                        steps.push(`Step 5: Limit does not exist (left ≠ right)`);
+                        
+                        return {
+                            steps,
+                            solution: 'Limit does not exist',
+                            value: null
+                        };
+                    }
+                } catch (error) {
+                    return {
+                        steps: [`Error: ${error.message}`],
+                        solution: 'Could not evaluate limit'
+                    };
+                }
+            }
+
+            // Derivatives
+            solveDerivatives(expression) {
+                const steps = [];
+                try {
+                    steps.push(`Step 1: Function: f(x) = ${expression}`);
+                    
+                    const derivative = math.derivative(expression, 'x');
+                    steps.push(`Step 2: Derivative: f'(x) = ${derivative.toString()}`);
+                    
+                    const simplified = math.simplify(derivative);
+                    steps.push(`Step 3: Simplified: f'(x) = ${simplified.toString()}`);
+                    
+                    return {
+                        steps,
+                        solution: simplified.toString(),
+                        value: simplified.toString()
+                    };
+                } catch (error) {
+                    return {
+                        steps: [`Error: ${error.message}`],
+                        solution: 'Could not compute derivative'
+                    };
+                }
+            }
+
+            // Integrals
+            solveIntegrals(expression, lower, upper) {
+                const steps = [];
+                try {
+                    if (lower !== undefined && upper !== undefined) {
+                        // Definite integral
+                        steps.push(`Step 1: Definite integral: ∫[${lower}, ${upper}] ${expression} dx`);
+                        
+                        // Numerical integration using Simpson's rule
+                        const n = 1000;
+                        const a = parseFloat(lower);
+                        const b = parseFloat(upper);
+                        const h = (b - a) / n;
+                        
+                        let sum = math.evaluate(expression, { x: a }) + math.evaluate(expression, { x: b });
+                        
+                        for (let i = 1; i < n; i++) {
+                            const x = a + i * h;
+                            const coefficient = (i % 2 === 0) ? 2 : 4;
+                            sum += coefficient * math.evaluate(expression, { x });
+                        }
+                        
+                        const result = (h / 3) * sum;
+                        steps.push(`Step 2: Numerical integration (Simpson's rule): ${result.toFixed(6)}`);
+                        
+                        return {
+                            steps,
+                            solution: result.toFixed(6),
+                            value: result
+                        };
+                    } else {
+                        // Indefinite integral (symbolic)
+                        steps.push(`Step 1: Indefinite integral: ∫ ${expression} dx`);
+                        
+                        // Common integral patterns
+                        const patterns = [
+                            { regex: /x\^(\d+)/, integral: (n) => `(1/${parseInt(n)+1})x^${parseInt(n)+1}` },
+                            { regex: /e\^x/, integral: () => 'e^x' },
+                            { regex: /1\/x/, integral: () => 'ln|x|' },
+                            { regex: /sin\(x\)/, integral: () => '-cos(x)' },
+                            { regex: /cos\(x\)/, integral: () => 'sin(x)' }
+                        ];
+                        
+                        for (const pattern of patterns) {
+                            const match = expression.match(pattern.regex);
+                            if (match) {
+                                const antiderivative = pattern.integral(match[1]);
+                                steps.push(`Step 2: Antiderivative: ${antiderivative} + C`);
+                                
+                                return {
+                                    steps,
+                                    solution: `${antiderivative} + C`,
+                                    value: antiderivative
+                                };
+                            }
+                        }
+                        
+                        steps.push(`Step 2: Could not find symbolic antiderivative`);
+                        
+                        return {
+                            steps,
+                            solution: 'Requires numerical methods',
+                            value: null
+                        };
+                    }
+                } catch (error) {
+                    return {
+                        steps: [`Error: ${error.message}`],
+                        solution: 'Could not compute integral'
+                    };
+                }
+            }
+        }
+
+        // Initialize Math Engine
+        const mathEngine = new MathEngine();
+
         // DOM Elements
         const topicItems = document.querySelectorAll('.topic-item');
         const subtopicItems = document.querySelectorAll('.subtopic-item');
@@ -936,26 +1641,34 @@
         const specificInputs = document.getElementById('specific-inputs');
         const calculateBtn = document.getElementById('calculate-btn');
         const clearBtn = document.getElementById('clear-btn');
+        const stepByStepBtn = document.getElementById('step-by-step-btn');
         const solutionSteps = document.getElementById('solution-steps');
         const graphPlaceholder = document.getElementById('graph-placeholder');
         const mathGraph = document.getElementById('math-graph');
         const updateGraphBtn = document.getElementById('update-graph');
+        const exportGraphBtn = document.getElementById('export-graph');
         const xMinInput = document.getElementById('x-min');
         const xMaxInput = document.getElementById('x-max');
         const yMinInput = document.getElementById('y-min');
         const yMaxInput = document.getElementById('y-max');
+        const clearHistoryBtn = document.getElementById('clear-history');
+        const exportHistoryBtn = document.getElementById('export-history');
+        const historyList = document.getElementById('history-list');
+        const currentTopicDisplay = document.getElementById('current-topic');
         
         // Scientific Calculator Elements
         const calcExpression = document.getElementById('calc-expression');
         const calcResult = document.getElementById('calc-result');
         const calcButtons = document.querySelectorAll('.calculator-buttons .calc-btn');
         const degRadToggle = document.getElementById('deg-rad-toggle');
+        const complexToggle = document.getElementById('complex-toggle');
         
-        // Current selected topic and subtopic
+        // Current state
         let selectedTopic = '';
         let selectedSubtopic = '';
         let currentExpression = '';
         let currentChart = null;
+        let showDetailedSteps = false;
         
         // Scientific Calculator State
         let calcState = {
@@ -965,98 +1678,125 @@
             operator: null,
             previousValue: '0',
             memory: 0,
-            isDegreeMode: true
+            isDegreeMode: true,
+            isComplexMode: false
         };
-        
-        // Event Listeners for Topic Selection
-        topicItems.forEach(item => {
-            item.addEventListener('click', function() {
-                const topic = this.getAttribute('data-topic');
-                const subtopicList = document.getElementById(`${topic}-subtopics`);
-                
-                // Toggle active class
-                topicItems.forEach(i => i.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Toggle subtopic list visibility
-                document.querySelectorAll('.subtopic-list').forEach(list => {
-                    if (list.id !== `${topic}-subtopics`) {
-                        list.style.display = 'none';
-                    }
+
+        // Initialize
+        function init() {
+            // Set up season
+            const now = new Date();
+            const month = now.getMonth();
+            const seasons = {
+                winter: { name: "Winter", icon: "fa-snowflake", months: [11, 0, 1] },
+                spring: { name: "Spring", icon: "fa-seedling", months: [2, 3, 4] },
+                summer: { name: "Summer", icon: "fa-sun", months: [5, 6, 7] },
+                autumn: { name: "Autumn", icon: "fa-leaf", months: [8, 9, 10] }
+            };
+            
+            let currentSeason = 'winter';
+            for (const [season, data] of Object.entries(seasons)) {
+                if (data.months.includes(month)) {
+                    currentSeason = season;
+                    break;
+                }
+            }
+            
+            document.body.classList.add(`season-${currentSeason}`);
+            document.getElementById('seasonText').textContent = seasons[currentSeason].name;
+            document.getElementById('seasonIcon').className = `fas ${seasons[currentSeason].icon}`;
+            document.getElementById(`${currentSeason}Overlay`).style.opacity = '0.15';
+            
+            // Update history display
+            updateHistoryDisplay();
+            
+            // Add event listeners
+            setupEventListeners();
+        }
+
+        // Setup Event Listeners
+        function setupEventListeners() {
+            // Topic selection
+            topicItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const topic = this.getAttribute('data-topic');
+                    const subtopicList = document.getElementById(`${topic}-subtopics`);
+                    
+                    // Toggle active class
+                    topicItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Toggle subtopic list
+                    document.querySelectorAll('.subtopic-list').forEach(list => {
+                        if (list.id !== `${topic}-subtopics`) {
+                            list.style.display = 'none';
+                        }
+                    });
+                    
+                    subtopicList.style.display = subtopicList.style.display === 'block' ? 'none' : 'block';
+                    selectedTopic = topic;
+                    updateCurrentTopic();
                 });
-                
-                if (subtopicList.style.display === 'block') {
-                    subtopicList.style.display = 'none';
-                } else {
-                    subtopicList.style.display = 'block';
-                }
-                
-                selectedTopic = topic;
-                updateCurrentTopic();
             });
-        });
-        
-        // Event Listeners for Subtopic Selection
-        subtopicItems.forEach(item => {
-            item.addEventListener('click', function() {
-                selectedSubtopic = this.getAttribute('data-subtopic');
-                updateCurrentTopic();
-                updateInputFields();
+
+            // Subtopic selection
+            subtopicItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    selectedSubtopic = this.getAttribute('data-subtopic');
+                    updateCurrentTopic();
+                    updateInputFields();
+                });
             });
-        });
-        
-        // Calculate Button
-        calculateBtn.addEventListener('click', function() {
-            if (!selectedTopic || !selectedSubtopic) {
-                solutionSteps.innerHTML = '<p class="error-message">Please select a math topic and subtopic first.</p>';
-                return;
-            }
+
+            // Buttons
+            calculateBtn.addEventListener('click', () => solveProblem());
+            stepByStepBtn.addEventListener('click', () => {
+                showDetailedSteps = true;
+                solveProblem();
+            });
+            clearBtn.addEventListener('click', clearAll);
+            updateGraphBtn.addEventListener('click', updateGraph);
+            exportGraphBtn.addEventListener('click', exportGraph);
+            clearHistoryBtn.addEventListener('click', clearHistory);
+            exportHistoryBtn.addEventListener('click', exportHistory);
+
+            // Scientific Calculator
+            calcButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const action = this.getAttribute('data-action');
+                    const number = this.getAttribute('data-number');
+                    
+                    if (number !== null) {
+                        inputNumber(number);
+                    } else if (action) {
+                        handleAction(action);
+                    }
+                    
+                    updateCalculatorDisplay();
+                });
+            });
+
+            degRadToggle.addEventListener('click', function() {
+                calcState.isDegreeMode = !calcState.isDegreeMode;
+                this.textContent = calcState.isDegreeMode ? 'DEG' : 'RAD';
+            });
+
+            complexToggle.addEventListener('click', function() {
+                calcState.isComplexMode = !calcState.isComplexMode;
+                this.textContent = calcState.isComplexMode ? 'Complex' : 'Real';
+            });
+
+            // Keyboard support
+            document.addEventListener('keydown', handleKeyDown);
             
-            if (!problemInput.value.trim()) {
-                solutionSteps.innerHTML = '<p class="error-message">Please enter a problem to solve.</p>';
-                return;
-            }
-            
-            solveProblem();
-        });
-        
-        // Clear Button
-        clearBtn.addEventListener('click', function() {
-            problemInput.value = '';
-            specificInputs.innerHTML = '';
-            solutionSteps.innerHTML = '<p>Select a math topic and enter a problem to see the solution steps here.</p>';
-            hideGraph();
-        });
-        
-        // Update Graph Button
-        updateGraphBtn.addEventListener('click', function() {
-            if (currentExpression) {
-                createGraph(currentExpression);
-            }
-        });
-        
-        // Scientific Calculator Event Listeners
-        calcButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const action = this.getAttribute('data-action');
-                const number = this.getAttribute('data-number');
-                
-                if (number !== null) {
-                    inputNumber(number);
-                } else if (action) {
-                    handleAction(action);
+            // Enter key for problem input
+            problemInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    solveProblem();
                 }
-                
-                updateCalculatorDisplay();
             });
-        });
-        
-        // Degree/Radians Toggle
-        degRadToggle.addEventListener('click', function() {
-            calcState.isDegreeMode = !calcState.isDegreeMode;
-            this.textContent = calcState.isDegreeMode ? 'DEG' : 'RAD';
-        });
-        
+        }
+
         // Update Current Topic Display
         function updateCurrentTopic() {
             const topicNames = {
@@ -1087,15 +1827,15 @@
             };
             
             if (selectedTopic && selectedSubtopic) {
-                document.querySelector('.calculator-area h2').innerHTML = `<i class="fas fa-calculator"></i> ${topicNames[selectedTopic]} - ${subtopicNames[selectedSubtopic]}`;
+                currentTopicDisplay.textContent = `${topicNames[selectedTopic]} - ${subtopicNames[selectedSubtopic]}`;
             } else if (selectedTopic) {
-                document.querySelector('.calculator-area h2').innerHTML = `<i class="fas fa-calculator"></i> ${topicNames[selectedTopic]} - Select a Subtopic`;
+                currentTopicDisplay.textContent = `${topicNames[selectedTopic]} - Select a Subtopic`;
             } else {
-                document.querySelector('.calculator-area h2').innerHTML = `<i class="fas fa-calculator"></i> Math Calculator`;
+                currentTopicDisplay.textContent = 'Math Calculator';
             }
         }
-        
-        // Update Input Fields Based on Selected Subtopic
+
+        // Update Input Fields
         function updateInputFields() {
             let html = '';
             
@@ -1123,14 +1863,13 @@
                     break;
                 case 'systems-equations':
                     html = `
-                        <label for="system-type">System Type:</label>
-                        <select id="system-type">
-                            <option value="linear">Linear Equations</option>
-                            <option value="nonlinear">Nonlinear Equations</option>
-                        </select>
-                        <div class="input-row">
-                            <input type="text" id="equation1" placeholder="First equation">
-                            <input type="text" id="equation2" placeholder="Second equation">
+                        <div class="input-group">
+                            <label for="equation1">First Equation:</label>
+                            <input type="text" id="equation1" placeholder="e.g., 2x + 3y = 6">
+                        </div>
+                        <div class="input-group">
+                            <label for="equation2">Second Equation:</label>
+                            <input type="text" id="equation2" placeholder="e.g., x - y = 2">
                         </div>
                     `;
                     break;
@@ -1142,8 +1881,10 @@
                             <option value="composite">Composite Functions</option>
                             <option value="inverse">Inverse Functions</option>
                         </select>
-                        <input type="text" id="function-input" placeholder="e.g., f(x)=2x+1">
-                        <input type="text" id="function-value" placeholder="Value to evaluate (e.g., 3)">
+                        <div class="input-group">
+                            <label for="function-value">Value to evaluate (optional):</label>
+                            <input type="text" id="function-value" placeholder="e.g., 3">
+                        </div>
                     `;
                     break;
                 case 'trigonometry':
@@ -1176,9 +1917,13 @@
                             <option value="definite">Definite Integral</option>
                         </select>
                         <div id="integral-limits" style="display: none;">
-                            <div class="input-row">
-                                <input type="text" id="lower-limit" placeholder="Lower limit">
-                                <input type="text" id="upper-limit" placeholder="Upper limit">
+                            <div class="input-group">
+                                <label for="lower-limit">Lower Limit:</label>
+                                <input type="text" id="lower-limit" placeholder="0">
+                            </div>
+                            <div class="input-group">
+                                <label for="upper-limit">Upper Limit:</label>
+                                <input type="text" id="upper-limit" placeholder="1">
                             </div>
                         </div>
                     `;
@@ -1189,73 +1934,223 @@
             
             specificInputs.innerHTML = html;
             
-            // Add event listener for integral type change
+            // Add event listeners for dynamic elements
             const integralType = document.getElementById('integral-type');
             if (integralType) {
                 integralType.addEventListener('change', function() {
                     const integralLimits = document.getElementById('integral-limits');
-                    integralLimits.style.display = this.value === 'definite' ? 'block' : 'none';
+                    if (integralLimits) {
+                        integralLimits.style.display = this.value === 'definite' ? 'block' : 'none';
+                    }
                 });
             }
         }
-        
-        // Solve Problem Based on Selected Topic and Subtopic
+
+        // Solve Problem
         function solveProblem() {
-            const problem = problemInput.value.trim();
-            let solutionHTML = '';
+            if (!selectedTopic || !selectedSubtopic) {
+                showError('Please select a math topic and subtopic first.');
+                return;
+            }
             
+            const problem = problemInput.value.trim();
+            if (!problem) {
+                showError('Please enter a problem to solve.');
+                return;
+            }
+            
+            let result;
             try {
                 switch(selectedSubtopic) {
                     case 'linear-equations':
-                        solutionHTML = solveLinearEquation(problem);
+                        result = mathEngine.solveLinearEquation(problem);
                         break;
                     case 'quadratic-equations':
-                        solutionHTML = solveQuadraticEquation(problem);
+                        result = mathEngine.solveQuadraticEquation(problem);
                         break;
                     case 'systems-equations':
-                        solutionHTML = solveSystemOfEquations(problem);
+                        const eq1 = document.getElementById('equation1')?.value || '';
+                        const eq2 = document.getElementById('equation2')?.value || '';
+                        result = mathEngine.solveSystemOfEquations(eq1, eq2);
                         break;
                     case 'polynomials':
-                        solutionHTML = solvePolynomial(problem);
+                        result = mathEngine.solvePolynomial(problem);
                         break;
                     case 'exponents':
-                        solutionHTML = solveExponents(problem);
+                        result = mathEngine.solveExponents(problem);
                         break;
                     case 'functions':
-                        solutionHTML = solveFunction(problem);
-                        break;
-                    case 'complex-numbers':
-                        solutionHTML = solveComplexNumbers(problem);
-                        break;
-                    case 'matrices':
-                        solutionHTML = solveMatrices(problem);
+                        const funcValue = document.getElementById('function-value')?.value || '';
+                        result = mathEngine.solveFunction(problem, funcValue);
                         break;
                     case 'logarithms':
-                        solutionHTML = solveLogarithms(problem);
+                        result = mathEngine.solveLogarithms(problem);
                         break;
                     case 'trigonometry':
-                        solutionHTML = solveTrigonometry(problem);
+                        result = mathEngine.solveTrigonometry(problem, calcState.isDegreeMode);
                         break;
                     case 'limits':
-                        solutionHTML = solveLimits(problem);
+                        result = mathEngine.solveLimits(problem);
                         break;
                     case 'derivatives':
-                        solutionHTML = solveDerivatives(problem);
+                        result = mathEngine.solveDerivatives(problem);
                         break;
                     case 'integrals':
-                        solutionHTML = solveIntegrals(problem);
+                        const lower = document.getElementById('lower-limit')?.value;
+                        const upper = document.getElementById('upper-limit')?.value;
+                        result = mathEngine.solveIntegrals(problem, lower, upper);
                         break;
                     default:
-                        solutionHTML = '<p class="error-message">Solution for this topic is not implemented yet.</p>';
+                        result = {
+                            steps: ['This topic is not fully implemented yet.'],
+                            solution: 'Feature coming soon'
+                        };
                 }
+                
+                // Display results
+                displaySolution(result);
+                
+                // Store in history
+                const historyEntry = mathEngine.storeInHistory(problem, result.solution, result.steps, selectedSubtopic);
+                updateHistoryDisplay();
+                
+                // Update graph if applicable
+                if (shouldGraph(selectedSubtopic)) {
+                    currentExpression = problem;
+                    updateGraph();
+                }
+                
             } catch (error) {
-                solutionHTML = `<p class="error-message">Error: ${error.message}</p>`;
+                showError(`Error: ${error.message}`);
             }
             
-            solutionSteps.innerHTML = solutionHTML;
+            showDetailedSteps = false;
         }
-        
-        // Hide graph and show placeholder
+
+        // Display Solution
+        function displaySolution(result) {
+            let stepsHTML = '';
+            
+            if (result.steps && result.steps.length > 0) {
+                const stepsToShow = showDetailedSteps ? result.steps : result.steps.slice(0, Math.min(3, result.steps.length));
+                
+                stepsToShow.forEach((step, index) => {
+                    stepsHTML += `
+                        <div class="solution-step">
+                            <span class="step-number">${index + 1}</span>
+                            <span class="math-expression">${step}</span>
+                        </div>
+                    `;
+                });
+                
+                if (!showDetailedSteps && result.steps.length > 3) {
+                    stepsHTML += `
+                        <div class="solution-step">
+                            <span class="step-number">...</span>
+                            <span class="math-expression">${result.steps.length - 3} more steps available</span>
+                            <div class="step-explanation">Click "Show Steps" to see all steps</div>
+                        </div>
+                    `;
+                }
+            }
+            
+            stepsHTML += `
+                <div class="final-result">
+                    <strong>Result:</strong> ${result.solution}
+                </div>
+            `;
+            
+            if (result.value !== undefined && result.value !== null) {
+                stepsHTML += `
+                    <div class="step-explanation">
+                        Numerical value: ${result.value}
+                    </div>
+                `;
+            }
+            
+            solutionSteps.innerHTML = stepsHTML;
+        }
+
+        // Show Error
+        function showError(message) {
+            solutionSteps.innerHTML = `
+                <div class="error-message">
+                    ${message}
+                </div>
+            `;
+            hideGraph();
+        }
+
+        // Clear All
+        function clearAll() {
+            problemInput.value = '';
+            specificInputs.innerHTML = '';
+            solutionSteps.innerHTML = '<p>Select a math topic and enter a problem to see the solution steps here.</p>';
+            hideGraph();
+            showDetailedSteps = false;
+        }
+
+        // Update History Display
+        function updateHistoryDisplay() {
+            if (mathEngine.history.length === 0) {
+                historyList.innerHTML = `
+                    <p style="color: var(--text-secondary); text-align: center; padding: 20px;">
+                        No calculations yet. Solve some problems to see history here.
+                    </p>
+                `;
+                return;
+            }
+            
+            historyList.innerHTML = mathEngine.history.map((entry, index) => `
+                <div class="history-item">
+                    <div class="history-time">${entry.date} ${entry.timestamp}</div>
+                    <div class="history-problem">${entry.problem}</div>
+                    <div class="history-solution">${entry.solution}</div>
+                </div>
+            `).join('');
+        }
+
+        // Clear History
+        function clearHistory() {
+            if (confirm('Are you sure you want to clear all history?')) {
+                mathEngine.history = [];
+                mathEngine.saveHistory();
+                updateHistoryDisplay();
+            }
+        }
+
+        // Export History
+        function exportHistory() {
+            if (mathEngine.history.length === 0) {
+                alert('No history to export.');
+                return;
+            }
+            
+            const csvContent = "data:text/csv;charset=utf-8," 
+                + "Date,Time,Problem,Solution\n"
+                + mathEngine.history.map(entry => 
+                    `"${entry.date}","${entry.timestamp}","${entry.problem}","${entry.solution}"`
+                ).join("\n");
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "qulator_history.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Should Graph
+        function shouldGraph(subtopic) {
+            const graphableTopics = [
+                'linear-equations', 'quadratic-equations', 'systems-equations',
+                'functions', 'trigonometry', 'derivatives', 'integrals'
+            ];
+            return graphableTopics.includes(subtopic);
+        }
+
+        // Hide Graph
         function hideGraph() {
             graphPlaceholder.style.display = 'flex';
             mathGraph.style.display = 'none';
@@ -1264,366 +2159,119 @@
                 currentChart = null;
             }
         }
-        
-        // Create graph based on expression and selected subtopic
-        function createGraph(expression) {
-            // Destroy existing chart
-            if (currentChart) {
-                currentChart.destroy();
+
+        // Update Graph
+        function updateGraph() {
+            if (!currentExpression) {
+                alert('Please solve a problem first to create a graph.');
+                return;
             }
             
-            // Show canvas and hide placeholder
-            graphPlaceholder.style.display = 'none';
-            mathGraph.style.display = 'block';
-            
-            // Get graph parameters
-            const xMin = parseFloat(xMinInput.value);
-            const xMax = parseFloat(xMaxInput.value);
-            const yMin = parseFloat(yMinInput.value);
-            const yMax = parseFloat(yMaxInput.value);
-            
-            // Generate data points based on subtopic
-            let datasets = [];
-            
-            switch(selectedSubtopic) {
-                case 'linear-equations':
-                    datasets = createLinearGraph(expression, xMin, xMax);
-                    break;
-                case 'quadratic-equations':
-                    datasets = createQuadraticGraph(expression, xMin, xMax);
-                    break;
-                case 'systems-equations':
-                    datasets = createSystemGraph(expression, xMin, xMax);
-                    break;
-                case 'functions':
-                    datasets = createFunctionGraph(expression, xMin, xMax);
-                    break;
-                case 'trigonometry':
-                    datasets = createTrigGraph(expression, xMin, xMax);
-                    break;
-                case 'derivatives':
-                    datasets = createDerivativeGraph(expression, xMin, xMax);
-                    break;
-                case 'integrals':
-                    datasets = createIntegralGraph(expression, xMin, xMax);
-                    break;
-                default:
-                    datasets = createDefaultGraph(expression, xMin, xMax);
-            }
-            
-            // Create chart
-            const ctx = mathGraph.getContext('2d');
-            currentChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    datasets: datasets
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            type: 'linear',
-                            position: 'bottom',
-                            min: xMin,
-                            max: xMax,
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            },
-                            ticks: {
-                                color: 'rgba(255, 255, 255, 0.7)'
-                            }
-                        },
-                        y: {
-                            min: yMin,
-                            max: yMax,
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            },
-                            ticks: {
-                                color: 'rgba(255, 255, 255, 0.7)'
-                            }
+            try {
+                const xMin = parseFloat(xMinInput.value) || -10;
+                const xMax = parseFloat(xMaxInput.value) || 10;
+                const yMin = parseFloat(yMinInput.value) || -10;
+                const yMax = parseFloat(yMaxInput.value) || 10;
+                
+                // Create data points
+                const data = [];
+                const step = (xMax - xMin) / 100;
+                
+                for (let x = xMin; x <= xMax; x += step) {
+                    try {
+                        const y = math.evaluate(currentExpression, { x });
+                        if (isFinite(y) && y >= yMin && y <= yMax) {
+                            data.push({ x, y });
                         }
+                    } catch (e) {
+                        // Skip points that can't be evaluated
+                    }
+                }
+                
+                if (data.length === 0) {
+                    throw new Error('Could not evaluate function in the given range.');
+                }
+                
+                // Destroy existing chart
+                if (currentChart) {
+                    currentChart.destroy();
+                }
+                
+                // Show canvas
+                graphPlaceholder.style.display = 'none';
+                mathGraph.style.display = 'block';
+                
+                // Create chart
+                const ctx = mathGraph.getContext('2d');
+                currentChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        datasets: [{
+                            label: `f(x) = ${currentExpression}`,
+                            data: data,
+                            borderColor: 'var(--primary)',
+                            backgroundColor: 'rgba(77, 171, 245, 0.1)',
+                            borderWidth: 2,
+                            fill: selectedSubtopic === 'integrals',
+                            tension: 0.4
+                        }]
                     },
-                    plugins: {
-                        legend: {
-                            display: true,
-                            labels: {
-                                color: 'rgba(255, 255, 255, 0.7)'
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                type: 'linear',
+                                position: 'bottom',
+                                min: xMin,
+                                max: xMax,
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                },
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.7)'
+                                }
+                            },
+                            y: {
+                                min: yMin,
+                                max: yMax,
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                },
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.7)'
+                                }
                             }
                         },
-                        tooltip: {
-                            mode: 'index',
-                            intersect: false
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: 'rgba(255, 255, 255, 0.7)'
+                                }
+                            }
                         }
                     }
-                }
-            });
-        }
-        
-        // Generate data for linear equations
-        function createLinearGraph(expression, xMin, xMax) {
-            const data = [];
-            const step = (xMax - xMin) / 100;
-            
-            for (let x = xMin; x <= xMax; x += step) {
-                try {
-                    const y = math.evaluate(expression, {x});
-                    data.push({x, y});
-                } catch (e) {
-                    // Skip points that can't be evaluated
-                }
-            }
-            
-            return [{
-                label: expression,
-                data: data,
-                borderColor: '#4dabf5',
-                backgroundColor: 'rgba(77, 171, 245, 0.1)',
-                borderWidth: 2,
-                fill: false,
-                tension: 0
-            }];
-        }
-        
-        // Generate data for quadratic equations
-        function createQuadraticGraph(expression, xMin, xMax) {
-            const data = [];
-            const step = (xMax - xMin) / 100;
-            
-            for (let x = xMin; x <= xMax; x += step) {
-                try {
-                    const y = math.evaluate(expression, {x});
-                    data.push({x, y});
-                } catch (e) {
-                    // Skip points that can't be evaluated
-                }
-            }
-            
-            return [{
-                label: expression,
-                data: data,
-                borderColor: '#ff6b6b',
-                backgroundColor: 'rgba(255, 107, 107, 0.1)',
-                borderWidth: 2,
-                fill: false,
-                tension: 0.4
-            }];
-        }
-        
-        // Generate data for systems of equations
-        function createSystemGraph(expression, xMin, xMax) {
-            const equation1 = document.getElementById('equation1')?.value || expression;
-            const equation2 = document.getElementById('equation2')?.value || '';
-            
-            const datasets = [];
-            const step = (xMax - xMin) / 100;
-            
-            // Parse first equation
-            if (equation1.includes('=')) {
-                const sides = equation1.split('=');
-                const leftExpr = sides[0].trim();
-                const rightExpr = sides[1].trim();
-                
-                const data = [];
-                for (let x = xMin; x <= xMax; x += step) {
-                    try {
-                        // For linear equations in form y = mx + b
-                        if (leftExpr.includes('y') && !leftExpr.includes('x')) {
-                            const y = math.evaluate(rightExpr, {x});
-                            data.push({x, y});
-                        } else if (leftExpr.includes('x') && leftExpr.includes('y')) {
-                            // For equations like 2x + 3y = 6, solve for y
-                            const equation = `${leftExpr} - (${rightExpr})`;
-                            // This is a simplified approach - in a real app you'd parse properly
-                            const y = (6 - 2*x) / 3; // Example for 2x + 3y = 6
-                            data.push({x, y});
-                        }
-                    } catch (e) {
-                        // Skip points that can't be evaluated
-                    }
-                }
-                
-                datasets.push({
-                    label: equation1,
-                    data: data,
-                    borderColor: '#4dabf5',
-                    borderWidth: 2,
-                    fill: false,
-                    tension: 0
                 });
-            }
-            
-            // Parse second equation
-            if (equation2 && equation2.includes('=')) {
-                const sides = equation2.split('=');
-                const leftExpr = sides[0].trim();
-                const rightExpr = sides[1].trim();
                 
-                const data = [];
-                for (let x = xMin; x <= xMax; x += step) {
-                    try {
-                        // For linear equations in form y = mx + b
-                        if (leftExpr.includes('y') && !leftExpr.includes('x')) {
-                            const y = math.evaluate(rightExpr, {x});
-                            data.push({x, y});
-                        } else if (leftExpr.includes('x') && leftExpr.includes('y')) {
-                            // For equations like x - y = 2, solve for y
-                            const equation = `${leftExpr} - (${rightExpr})`;
-                            // This is a simplified approach
-                            const y = x - 2; // Example for x - y = 2
-                            data.push({x, y});
-                        }
-                    } catch (e) {
-                        // Skip points that can't be evaluated
-                    }
-                }
-                
-                datasets.push({
-                    label: equation2,
-                    data: data,
-                    borderColor: '#ff6b6b',
-                    borderWidth: 2,
-                    fill: false,
-                    tension: 0
-                });
+            } catch (error) {
+                alert(`Graph Error: ${error.message}`);
+                hideGraph();
             }
-            
-            return datasets;
         }
-        
-        // Generate data for functions
-        function createFunctionGraph(expression, xMin, xMax) {
-            const funcInput = document.getElementById('function-input')?.value || expression;
-            
-            if (!funcInput.includes('=')) {
-                return createDefaultGraph(expression, xMin, xMax);
+
+        // Export Graph
+        function exportGraph() {
+            if (!currentChart) {
+                alert('No graph to export.');
+                return;
             }
             
-            const [funcDef, funcExpr] = funcInput.split('=');
-            const data = [];
-            const step = (xMax - xMin) / 100;
-            
-            for (let x = xMin; x <= xMax; x += step) {
-                try {
-                    const y = math.evaluate(funcExpr.trim(), {x});
-                    data.push({x, y});
-                } catch (e) {
-                    // Skip points that can't be evaluated
-                }
-            }
-            
-            return [{
-                label: funcInput,
-                data: data,
-                borderColor: '#69db7c',
-                backgroundColor: 'rgba(105, 219, 124, 0.1)',
-                borderWidth: 2,
-                fill: false,
-                tension: 0.4
-            }];
+            const link = document.createElement('a');
+            link.download = `graph_${new Date().toISOString().slice(0,10)}.png`;
+            link.href = mathGraph.toDataURL('image/png');
+            link.click();
         }
-        
-        // Generate data for trigonometric functions
-        function createTrigGraph(expression, xMin, xMax) {
-            const data = [];
-            const step = (xMax - xMin) / 200; // More points for trig functions
-            
-            for (let x = xMin; x <= xMax; x += step) {
-                try {
-                    const y = math.evaluate(expression, {x});
-                    data.push({x, y});
-                } catch (e) {
-                    // Skip points that can't be evaluated
-                }
-            }
-            
-            return [{
-                label: expression,
-                data: data,
-                borderColor: '#ffd43b',
-                backgroundColor: 'rgba(255, 212, 59, 0.1)',
-                borderWidth: 2,
-                fill: false,
-                tension: 0
-            }];
-        }
-        
-        // Generate data for derivatives
-        function createDerivativeGraph(expression, xMin, xMax) {
-            const data = [];
-            const step = (xMax - xMin) / 100;
-            
-            for (let x = xMin; x <= xMax; x += step) {
-                try {
-                    const y = math.derivative(expression, 'x').evaluate({x});
-                    data.push({x, y});
-                } catch (e) {
-                    // Skip points that can't be evaluated
-                }
-            }
-            
-            return [{
-                label: `d/dx(${expression})`,
-                data: data,
-                borderColor: '#e8590c',
-                backgroundColor: 'rgba(232, 89, 12, 0.1)',
-                borderWidth: 2,
-                fill: false,
-                tension: 0.4
-            }];
-        }
-        
-        // Generate data for integrals (area under curve)
-        function createIntegralGraph(expression, xMin, xMax) {
-            const data = [];
-            const step = (xMax - xMin) / 100;
-            
-            for (let x = xMin; x <= xMax; x += step) {
-                try {
-                    const y = math.evaluate(expression, {x});
-                    data.push({x, y});
-                } catch (e) {
-                    // Skip points that can't be evaluated
-                }
-            }
-            
-            return [{
-                label: expression,
-                data: data,
-                borderColor: '#cc5de8',
-                backgroundColor: 'rgba(204, 93, 232, 0.3)',
-                borderWidth: 2,
-                fill: 'origin',
-                tension: 0.4
-            }];
-        }
-        
-        // Default graph for other expressions
-        function createDefaultGraph(expression, xMin, xMax) {
-            const data = [];
-            const step = (xMax - xMin) / 100;
-            
-            for (let x = xMin; x <= xMax; x += step) {
-                try {
-                    const y = math.evaluate(expression, {x});
-                    data.push({x, y});
-                } catch (e) {
-                    // Skip points that can't be evaluated
-                }
-            }
-            
-            return [{
-                label: expression,
-                data: data,
-                borderColor: '#4dabf5',
-                backgroundColor: 'rgba(77, 171, 245, 0.1)',
-                borderWidth: 2,
-                fill: false,
-                tension: 0.4
-            }];
-        }
-        
+
         // Scientific Calculator Functions
         function inputNumber(num) {
             if (calcState.waitingForOperand) {
@@ -1633,19 +2281,7 @@
                 calcState.currentValue = calcState.currentValue === '0' ? num : calcState.currentValue + num;
             }
         }
-        
-        function inputDecimal() {
-            if (calcState.waitingForOperand) {
-                calcState.currentValue = '0.';
-                calcState.waitingForOperand = false;
-                return;
-            }
-            
-            if (calcState.currentValue.indexOf('.') === -1) {
-                calcState.currentValue += '.';
-            }
-        }
-        
+
         function handleAction(action) {
             switch (action) {
                 case 'clear':
@@ -1721,7 +2357,7 @@
                     
                 case 'factorial':
                     let n = parseInt(calcState.currentValue);
-                    if (n < 0) {
+                    if (n < 0 || n > 100) {
                         calcState.currentValue = 'Error';
                     } else {
                         let result = 1;
@@ -1741,41 +2377,25 @@
                     break;
                     
                 case 'sin':
-                    let angle = parseFloat(calcState.currentValue);
-                    if (!calcState.isDegreeMode) angle = angle * 180 / Math.PI;
-                    calcState.currentValue = String(Math.sin(angle * Math.PI / 180));
-                    break;
-                    
                 case 'cos':
-                    angle = parseFloat(calcState.currentValue);
-                    if (!calcState.isDegreeMode) angle = angle * 180 / Math.PI;
-                    calcState.currentValue = String(Math.cos(angle * Math.PI / 180));
-                    break;
-                    
                 case 'tan':
-                    angle = parseFloat(calcState.currentValue);
-                    if (!calcState.isDegreeMode) angle = angle * 180 / Math.PI;
-                    calcState.currentValue = String(Math.tan(angle * Math.PI / 180));
+                    let angle = parseFloat(calcState.currentValue);
+                    if (calcState.isDegreeMode) {
+                        angle = angle * Math.PI / 180;
+                    }
+                    const trigFunc = Math[action];
+                    calcState.currentValue = String(trigFunc(angle));
                     break;
                     
                 case 'arcsin':
-                    let value = parseFloat(calcState.currentValue);
-                    let result = Math.asin(value) * 180 / Math.PI;
-                    if (!calcState.isDegreeMode) result = Math.asin(value);
-                    calcState.currentValue = String(result);
-                    break;
-                    
                 case 'arccos':
-                    value = parseFloat(calcState.currentValue);
-                    result = Math.acos(value) * 180 / Math.PI;
-                    if (!calcState.isDegreeMode) result = Math.acos(value);
-                    calcState.currentValue = String(result);
-                    break;
-                    
                 case 'arctan':
-                    value = parseFloat(calcState.currentValue);
-                    result = Math.atan(value) * 180 / Math.PI;
-                    if (!calcState.isDegreeMode) result = Math.atan(value);
+                    let value = parseFloat(calcState.currentValue);
+                    let inverseFunc = Math[action.replace('arc', 'a')];
+                    let result = inverseFunc(value);
+                    if (calcState.isDegreeMode) {
+                        result = result * 180 / Math.PI;
+                    }
                     calcState.currentValue = String(result);
                     break;
                     
@@ -1830,11 +2450,16 @@
                     break;
                     
                 case 'decimal':
-                    inputDecimal();
+                    if (calcState.waitingForOperand) {
+                        calcState.currentValue = '0.';
+                        calcState.waitingForOperand = false;
+                    } else if (calcState.currentValue.indexOf('.') === -1) {
+                        calcState.currentValue += '.';
+                    }
                     break;
             }
         }
-        
+
         function calculate(a, b, operator) {
             switch (operator) {
                 case 'add': return a + b;
@@ -1847,7 +2472,7 @@
                 default: return b;
             }
         }
-        
+
         function getOperatorSymbol(operator) {
             switch (operator) {
                 case 'add': return '+';
@@ -1860,85 +2485,47 @@
                 default: return '';
             }
         }
-        
+
         function updateCalculatorDisplay() {
             calcResult.textContent = calcState.currentValue;
             calcExpression.textContent = calcState.expression;
         }
-        
-        // Initialize everything when page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            // Set up season
-            const now = new Date();
-            const month = now.getMonth();
-            const seasons = {
-                winter: { name: "Winter", icon: "fa-snowflake", months: [11, 0, 1] },
-                spring: { name: "Spring", icon: "fa-seedling", months: [2, 3, 4] },
-                summer: { name: "Summer", icon: "fa-sun", months: [5, 6, 7] },
-                autumn: { name: "Autumn", icon: "fa-leaf", months: [8, 9, 10] }
-            };
 
-            let currentSeason = 'winter';
-            for (const [season, data] of Object.entries(seasons)) {
-                if (data.months.includes(month)) {
-                    currentSeason = season;
-                    break;
-                }
+        // Keyboard Handler
+        function handleKeyDown(e) {
+            if (e.key >= '0' && e.key <= '9') {
+                inputNumber(e.key);
+                updateCalculatorDisplay();
+            } else if (e.key === '.') {
+                handleAction('decimal');
+                updateCalculatorDisplay();
+            } else if (e.key === '+') {
+                handleAction('add');
+                updateCalculatorDisplay();
+            } else if (e.key === '-') {
+                handleAction('subtract');
+                updateCalculatorDisplay();
+            } else if (e.key === '*') {
+                handleAction('multiply');
+                updateCalculatorDisplay();
+            } else if (e.key === '/') {
+                e.preventDefault();
+                handleAction('divide');
+                updateCalculatorDisplay();
+            } else if (e.key === 'Enter' || e.key === '=') {
+                handleAction('equals');
+                updateCalculatorDisplay();
+            } else if (e.key === 'Escape') {
+                handleAction('clear');
+                updateCalculatorDisplay();
+            } else if (e.key === 'Backspace') {
+                handleAction('backspace');
+                updateCalculatorDisplay();
             }
-
-            document.body.classList.add(`season-${currentSeason}`);
-            document.getElementById('seasonText').textContent = seasons[currentSeason].name;
-            document.getElementById('seasonIcon').className = `fas ${seasons[currentSeason].icon}`;
-            document.getElementById(`${currentSeason}Overlay`).style.opacity = '0.15';
-
-            // Initialize calculator display
-            updateCalculatorDisplay();
-        });
-
-        // Note: The equation solving functions would be implemented here
-        // For brevity, I've focused on the UI and scientific calculator
-        
-        // Placeholder for equation solving functions
-        function solveLinearEquation(problem) {
-            return `
-                <div class="solution-step">
-                    <span class="step-number">1</span>
-                    <span class="math-expression">Solving: ${problem}</span>
-                </div>
-                <div class="solution-step">
-                    <span class="step-number">2</span>
-                    <span class="math-expression">This would show the step-by-step solution for linear equations</span>
-                </div>
-                <div class="final-result">Solution: x = 4</div>
-            `;
         }
-        
-        function solveQuadraticEquation(problem) {
-            return `
-                <div class="solution-step">
-                    <span class="step-number">1</span>
-                    <span class="math-expression">Solving: ${problem}</span>
-                </div>
-                <div class="solution-step">
-                    <span class="step-number">2</span>
-                    <span class="math-expression">This would show the step-by-step solution for quadratic equations</span>
-                </div>
-                <div class="final-result">Solutions: x = 2, x = 3</div>
-            `;
-        }
-        
-        // Placeholder for other equation solving functions
-        function solveSystemOfEquations(problem) { return '<p>System of equations solution would appear here</p>'; }
-        function solvePolynomial(problem) { return '<p>Polynomial solution would appear here</p>'; }
-        function solveExponents(problem) { return '<p>Exponents solution would appear here</p>'; }
-        function solveFunction(problem) { return '<p>Function solution would appear here</p>'; }
-        function solveComplexNumbers(problem) { return '<p>Complex numbers solution would appear here</p>'; }
-        function solveMatrices(problem) { return '<p>Matrices solution would appear here</p>'; }
-        function solveLogarithms(problem) { return '<p>Logarithms solution would appear here</p>'; }
-        function solveTrigonometry(problem) { return '<p>Trigonometry solution would appear here</p>'; }
-        function solveLimits(problem) { return '<p>Limits solution would appear here</p>'; }
-        function solveDerivatives(problem) { return '<p>Derivatives solution would appear here</p>'; }
-        function solveIntegrals(problem) { return '<p>Integrals solution would appear here</p>'; }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
